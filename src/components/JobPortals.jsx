@@ -220,6 +220,16 @@ const JobPortals = () => {
     window.open(url, "_blank");
   };
 
+  const handlePortalCardClick = (e, url) => {
+    e.stopPropagation(); // Prevent heart button click
+    handlePortalClick(url);
+  };
+
+  const handleHeartClick = (e, portalId) => {
+    e.stopPropagation(); // Prevent card click
+    toggleFavorite(portalId);
+  };
+
   return (
     <div className="job-portals">
       {/* Header with JobScout branding and navigation */}
@@ -259,16 +269,14 @@ const JobPortals = () => {
                 <div
                   key={`favorite-${portal.id}`}
                   className="portal-card favorite"
+                  onClick={(e) => handlePortalCardClick(e, portal.url)}
                 >
-                  <div
-                    className="portal-info"
-                    onClick={() => handlePortalClick(portal.url)}
-                  >
+                  <div className="portal-info">
                     <h3 className="portal-name">{portal.name}</h3>
                   </div>
                   <button
                     className="heart-btn favorite"
-                    onClick={() => toggleFavorite(portal.id)}
+                    onClick={(e) => handleHeartClick(e, portal.id)}
                     title="Remove from favorites"
                   >
                     ❤️
@@ -289,18 +297,19 @@ const JobPortals = () => {
             {jobPortals
               .filter((portal) => portal && portal.name && portal.url) // Filter out any invalid portals
               .map((portal) => (
-                <div key={`portal-${portal.id}`} className="portal-card">
-                  <div
-                    className="portal-info"
-                    onClick={() => handlePortalClick(portal.url)}
-                  >
+                <div 
+                  key={`portal-${portal.id}`} 
+                  className="portal-card"
+                  onClick={(e) => handlePortalCardClick(e, portal.url)}
+                >
+                  <div className="portal-info">
                     <h3 className="portal-name">{portal.name}</h3>
                   </div>
                   <button
                     className={`heart-btn ${
                       favoritePortals.includes(portal.id) ? "favorite" : ""
                     }`}
-                    onClick={() => toggleFavorite(portal.id)}
+                    onClick={(e) => handleHeartClick(e, portal.id)}
                     title={
                       favoritePortals.includes(portal.id)
                         ? "Remove from favorites"
