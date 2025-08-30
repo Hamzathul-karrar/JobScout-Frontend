@@ -155,6 +155,42 @@ const JobPortals = () => {
       url: "https://in.prosple.com/",
       isFavorite: false,
     },
+    {
+      id: 28,
+      name: "Jobsora India",
+      url: "https://in.jobsora.com/",
+      isFavorite: false,
+    },
+    {
+      id: 29,
+      name: "Jooble India",
+      url: "https://in.jooble.org/",
+      isFavorite: false,
+    },
+    {
+      id: 30,
+      name: "Google Careers Bangalore",
+      url: "https://www.google.com/about/careers/applications/locations/bangalore",
+      isFavorite: false,
+    },
+    {
+      id: 31,
+      name: "Rozgar.com",
+      url: "https://rozgar.com/",
+      isFavorite: false,
+    },
+    {
+      id: 32,
+      name: "LetsIntern",
+      url: "https://www.letsintern.com/",
+      isFavorite: false,
+    },
+    {
+      id: 33,
+      name: "Hirist Tech",
+      url: "https://www.hirist.tech/",
+      isFavorite: false,
+    },
   ];
 
   const toggleFavorite = (portalId) => {

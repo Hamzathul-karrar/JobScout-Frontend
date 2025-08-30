@@ -141,9 +141,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
-  border: 2px solid transparent;
+  border: 2px solid rgba(102, 126, 234, 0.1);
   /* Hardware acceleration for smooth scrolling */
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -152,12 +152,38 @@
   /* Prevent text wrapping issues */
   white-space: nowrap;
   overflow: hidden;
+  position: relative;
+}
+
+.portal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 15px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
 }
 
 .portal-card:hover {
-  transform: translateY(-5px) translateZ(0);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  border-color: #667eea;
+  transform: translateY(-8px) scale(1.02) translateZ(0);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+  border-color: #4c63d2;
+  border-width: 3px;
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.portal-card:hover::before {
+  opacity: 0.05;
+}
+
+.portal-card:active {
+  transform: translateY(-4px) scale(1.01) translateZ(0);
+  transition: all 0.1s ease;
 }
 
 .portal-card.favorite {
@@ -169,9 +195,25 @@
   );
 }
 
+.portal-card.favorite:hover {
+  border-color: #9b2c2c;
+  border-width: 3px;
+  box-shadow: 0 20px 40px rgba(229, 62, 62, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(229, 62, 62, 0.15)
+  );
+}
+
 .portal-info {
   flex: 1;
   cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.portal-card:hover .portal-info {
+  transform: translateX(5px);
 }
 
 .portal-name {
@@ -179,11 +221,18 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .portal-card:hover .portal-name {
   color: #667eea;
+  text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+}
+
+.portal-card.favorite:hover .portal-name {
+  color: #c53030;
+  text-shadow: 0 0 20px rgba(229, 62, 62, 0.3);
 }
 
 /* Heart Button Styles */
@@ -194,21 +243,51 @@
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 44px;
   min-height: 44px;
+  position: relative;
+  overflow: hidden;
+}
+
+.heart-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(229, 62, 62, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
 }
 
 .heart-btn:hover {
-  transform: scale(1.2);
+  transform: scale(1.15) rotate(5deg);
   background: rgba(229, 62, 62, 0.1);
+}
+
+.heart-btn:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+.heart-btn:active {
+  transform: scale(1.1) rotate(0deg);
+  transition: all 0.1s ease;
 }
 
 .heart-btn.favorite {
   animation: heartBeat 0.6s ease-in-out;
+}
+
+.heart-btn.favorite:hover {
+  transform: scale(1.2) rotate(-5deg);
+  background: rgba(229, 62, 62, 0.15);
 }
 
 @keyframes heartBeat {
