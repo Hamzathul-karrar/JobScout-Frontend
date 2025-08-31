@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./JobPortals.css";
 
@@ -6,6 +6,30 @@ const JobPortals = () => {
   const [favoritePortals, setFavoritePortals] = useState([]);
   const [activeTab, setActiveTab] = useState("home");
   const navigate = useNavigate();
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Load favorites from localStorage on component mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('jobScoutFavoritePortals');
+    if (savedFavorites) {
+      try {
+        const parsedFavorites = JSON.parse(savedFavorites);
+        setFavoritePortals(parsedFavorites);
+      } catch (error) {
+        console.error('Error parsing saved favorites:', error);
+        localStorage.removeItem('jobScoutFavoritePortals');
+      }
+    }
+    setIsInitialized(true);
+  }, []);
+
+  // Save favorites to localStorage whenever they change (but not during initial load)
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem('jobScoutFavoritePortals', JSON.stringify(favoritePortals));
+    }
+  }, [favoritePortals, isInitialized]);
+
 
   const jobPortals = [
     {
@@ -197,9 +221,11 @@ const JobPortals = () => {
     setFavoritePortals((prev) => {
       const isAlreadyFavorite = prev.includes(portalId);
       if (isAlreadyFavorite) {
-        return prev.filter((id) => id !== portalId);
+        const newFavorites = prev.filter((id) => id !== portalId);
+        return newFavorites;
       } else {
-        return [...prev, portalId];
+        const newFavorites = [...prev, portalId];
+        return newFavorites;
       }
     });
   };
