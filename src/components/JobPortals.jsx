@@ -10,14 +10,14 @@ const JobPortals = () => {
 
   // Load favorites from localStorage on component mount
   useEffect(() => {
-    const savedFavorites = localStorage.getItem('jobScoutFavoritePortals');
+    const savedFavorites = localStorage.getItem("jobScoutFavoritePortals");
     if (savedFavorites) {
       try {
         const parsedFavorites = JSON.parse(savedFavorites);
         setFavoritePortals(parsedFavorites);
       } catch (error) {
-        console.error('Error parsing saved favorites:', error);
-        localStorage.removeItem('jobScoutFavoritePortals');
+        console.error("Error parsing saved favorites:", error);
+        localStorage.removeItem("jobScoutFavoritePortals");
       }
     }
     setIsInitialized(true);
@@ -26,10 +26,12 @@ const JobPortals = () => {
   // Save favorites to localStorage whenever they change (but not during initial load)
   useEffect(() => {
     if (isInitialized) {
-      localStorage.setItem('jobScoutFavoritePortals', JSON.stringify(favoritePortals));
+      localStorage.setItem(
+        "jobScoutFavoritePortals",
+        JSON.stringify(favoritePortals)
+      );
     }
   }, [favoritePortals, isInitialized]);
-
 
   const jobPortals = [
     {
@@ -52,167 +54,134 @@ const JobPortals = () => {
     },
     {
       id: 4,
-      name: "Monster",
-      url: "https://www.monster.com/",
-      isFavorite: false,
-    },
-    {
-      id: 5,
-      name: "CareerBuilder",
-      url: "https://www.careerbuilder.com/",
-      isFavorite: false,
-    },
-    {
-      id: 6,
       name: "ZipRecruiter",
       url: "https://www.ziprecruiter.com/",
       isFavorite: false,
     },
     {
-      id: 7,
-      name: "SimplyHired",
-      url: "https://www.simplyhired.com/",
-      isFavorite: false,
-    },
-    { id: 8, name: "Dice", url: "https://www.dice.com/", isFavorite: false },
-    {
-      id: 9,
-      name: "AngelList",
-      url: "https://angel.co/jobs",
+      id: 5,
+      name: "Remote.co",
+      url: "https://remote.co/",
       isFavorite: false,
     },
     {
-      id: 10,
-      name: "Stack Overflow Jobs",
-      url: "https://stackoverflow.com/jobs",
-      isFavorite: false,
-    },
-    { id: 11, name: "Remote.co", url: "https://remote.co/", isFavorite: false },
-    {
-      id: 12,
+      id: 6,
       name: "WeWorkRemotely",
       url: "https://weworkremotely.com/",
       isFavorite: false,
     },
     {
-      id: 13,
-      name: "Naukri.com",
+      id: 7,
+      name: "Naukri",
       url: "https://www.naukri.com/",
       isFavorite: false,
     },
     {
-      id: 14,
-      name: "Monster India",
-      url: "https://www.monsterindia.com/",
-      isFavorite: false,
-    },
-    {
-      id: 15,
-      name: "Shine.com",
+      id: 8,
+      name: "Shine",
       url: "https://www.shine.com/",
       isFavorite: false,
     },
     {
-      id: 16,
+      id: 9,
       name: "TimesJobs",
       url: "https://www.timesjobs.com/",
       isFavorite: false,
     },
     {
-      id: 17,
+      id: 10,
       name: "FreshersWorld",
       url: "https://www.freshersworld.com/",
       isFavorite: false,
     },
     {
-      id: 18,
+      id: 11,
       name: "Hirist",
       url: "https://www.hirist.com/",
       isFavorite: false,
     },
     {
-      id: 19,
-      name: "Foundit.in",
+      id: 12,
+      name: "Foundit",
       url: "https://www.foundit.in/",
       isFavorite: false,
     },
     {
-      id: 20,
+      id: 13,
       name: "SimplyHired India",
       url: "https://www.simplyhired.co.in/",
       isFavorite: false,
     },
     {
-      id: 21,
+      id: 14,
       name: "Internshala",
       url: "https://internshala.com/",
       isFavorite: false,
     },
     {
-      id: 22,
+      id: 15,
       name: "Elitmus",
-      url: "https://www.elitmus.com/",
+      url: "https://www.elitmus.com/jobs",
       isFavorite: false,
     },
     {
-      id: 23,
+      id: 16,
       name: "Placement India",
       url: "https://www.placementindia.com/",
       isFavorite: false,
     },
-    { id: 24, name: "Apna.co", url: "https://apna.co/", isFavorite: false },
     {
-      id: 25,
+      id: 17,
+      name: "Apna.co",
+      url: "https://apna.co/",
+      isFavorite: false,
+    },
+    {
+      id: 18,
       name: "Way2Fresher",
-      url: "https://www.way2fresher.com/",
+      url: "https://www.way2fresher.com/jobs/",
       isFavorite: false,
     },
     {
-      id: 26,
+      id: 19,
       name: "JumpWhere",
-      url: "https://www.jumpwhere.com/",
+      url: "https://jumpwhere.com/job/",
       isFavorite: false,
     },
     {
-      id: 27,
+      id: 20,
       name: "Prosple India",
       url: "https://in.prosple.com/",
       isFavorite: false,
     },
     {
-      id: 28,
+      id: 21,
       name: "Jobsora India",
       url: "https://in.jobsora.com/",
       isFavorite: false,
     },
     {
-      id: 29,
+      id: 22,
       name: "Jooble India",
       url: "https://in.jooble.org/",
       isFavorite: false,
     },
     {
-      id: 30,
+      id: 23,
       name: "Google Careers Bangalore",
       url: "https://www.google.com/about/careers/applications/locations/bangalore",
       isFavorite: false,
     },
     {
-      id: 31,
-      name: "Rozgar.com",
+      id: 24,
+      name: "Rozgar",
       url: "https://rozgar.com/",
       isFavorite: false,
     },
     {
-      id: 32,
+      id: 25,
       name: "LetsIntern",
       url: "https://www.letsintern.com/",
-      isFavorite: false,
-    },
-    {
-      id: 33,
-      name: "Hirist Tech",
-      url: "https://www.hirist.tech/",
       isFavorite: false,
     },
   ];
@@ -323,8 +292,8 @@ const JobPortals = () => {
             {jobPortals
               .filter((portal) => portal && portal.name && portal.url) // Filter out any invalid portals
               .map((portal) => (
-                <div 
-                  key={`portal-${portal.id}`} 
+                <div
+                  key={`portal-${portal.id}`}
                   className="portal-card"
                   onClick={(e) => handlePortalCardClick(e, portal.url)}
                 >
