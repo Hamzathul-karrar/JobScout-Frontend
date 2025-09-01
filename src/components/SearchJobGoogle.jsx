@@ -135,7 +135,7 @@ const SearchJobGoogle = () => {
       {!isSearching && jobs.length > 0 && (
         <div className="results-container">
           <h2 className="results-title">
-            Found {jobs.length} job{jobs.length !== 1 ? 's' : ''} for "{jobTitle}" in "{location}"
+             {jobs.length} job{jobs.length !== 1 ? 's' : ''} Matched
           </h2>
           <div className="jobs-table-container">
                          <table className="jobs-table">

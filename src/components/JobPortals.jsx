@@ -244,9 +244,9 @@ const JobPortals = () => {
 
             <button
               className={`nav-btn ${activeTab === "search" ? "active" : ""}`}
-              onClick={() => setActiveTab("search")}
+              onClick={() => navigate("/search-jobs")}
             >
-              🔍 Search Jobs
+              🔍 Search career sites
             </button>
           </nav>
         </div>
