@@ -2,12 +2,17 @@ import React from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import JobPortals from "./components/JobPortals";
+import SearchJobGoogle from "./components/SearchJobGoogle";
 
 function App() {
   const navigate = useNavigate();
 
   const handleExplorePortals = () => {
     navigate("/jobportals");
+  };
+
+  const handleSearchJobs = () => {
+    navigate("/search-jobs");
   };
 
   return (
@@ -30,10 +35,10 @@ function App() {
                   ambitions. Explore curated listings and apply faster.
                 </p>
                 <div className="hero-ctas">
-                  <a className="cta-btn primary" href="#start">
+                  <button className="cta-btn primary" onClick={handleSearchJobs}>
                     <span className="icon">🔎</span>
                     <span>Explore Jobs Across Career Sites</span>
-                  </a>
+                  </button>
                   <button
                     className="cta-btn ghost"
                     onClick={handleExplorePortals}
@@ -90,10 +95,10 @@ function App() {
                   that match your skills and aspirations.
                 </p>
                 <div className="hero-ctas">
-                  <a className="cta-btn primary" href="#start">
+                  <button className="cta-btn primary" onClick={handleSearchJobs}>
                     <span className="icon">🔎</span>
                     <span>Explore Jobs Across Career Sites</span>
-                  </a>
+                  </button>
                   <button
                     className="cta-btn ghost"
                     onClick={handleExplorePortals}
@@ -118,6 +123,7 @@ function App() {
       />
 
       <Route path="/jobportals" element={<JobPortals />} />
+      <Route path="/search-jobs" element={<SearchJobGoogle />} />
     </Routes>
   );
 }
