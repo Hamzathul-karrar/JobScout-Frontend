@@ -138,59 +138,49 @@ const SearchJobGoogle = () => {
             Found {jobs.length} job{jobs.length !== 1 ? 's' : ''} for "{jobTitle}" in "{location}"
           </h2>
           <div className="jobs-table-container">
-            <table className="jobs-table">
-              <thead>
-                <tr>
-                  <th>Company</th>
-                  <th>Title</th>
-                  <th>Description</th>
-                  <th>Location</th>
-                  <th>Job Type</th>
-                  <th>Posted Date</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {jobs.map((job, index) => (
-                  <tr key={index} className="job-row">
-                    <td className="company-cell">
-                      <strong>{job.company || 'N/A'}</strong>
-                    </td>
-                    <td className="title-cell">
-                      <strong>{job.title || 'N/A'}</strong>
-                    </td>
-                    <td className="description-cell">
-                      {truncateText(job.description || 'No description available')}
-                    </td>
-                    <td className="location-cell">
-                      {job.location || 'N/A'}
-                    </td>
-                    <td className="job-type-cell">
-                      <span className={`job-type-badge ${(job.jobType || '').toLowerCase()}`}>
-                        {job.jobType || 'N/A'}
-                      </span>
-                    </td>
-                    <td className="date-cell">
-                      {formatDate(job.postedDate)}
-                    </td>
-                    <td className="action-cell">
-                      {job.link ? (
-                        <a 
-                          href={job.link} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="apply-button"
-                        >
-                          Apply
-                        </a>
-                      ) : (
-                        <span className="no-link">No link available</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                         <table className="jobs-table">
+               <thead>
+                 <tr>
+                   <th>Company</th>
+                   <th>Title</th>
+                   <th>Description</th>
+                   <th>Posted Date</th>
+                   <th>Link</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {jobs.map((job, index) => (
+                   <tr key={index} className="job-row">
+                     <td className="company-cell">
+                       <strong>{job.company || 'N/A'}</strong>
+                     </td>
+                     <td className="title-cell">
+                       <strong>{job.title || 'N/A'}</strong>
+                     </td>
+                     <td className="description-cell">
+                       {truncateText(job.description || 'No description available')}
+                     </td>
+                     <td className="date-cell">
+                       {formatDate(job.postedDate)}
+                     </td>
+                     <td className="action-cell">
+                       {job.link ? (
+                         <a 
+                           href={job.link} 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           className="apply-button"
+                         >
+                           Apply
+                         </a>
+                       ) : (
+                         <span className="no-link">No link available</span>
+                       )}
+                     </td>
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
           </div>
         </div>
       )}
