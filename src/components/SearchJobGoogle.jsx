@@ -34,7 +34,15 @@ const SearchJobGoogle = () => {
       }
 
       const data = await response.json();
-      setJobs(data.jobs || data); // Handle both {jobs: [...]} and [...] formats
+      const jobsArray = data?.jobs || data || [];
+      const toTimestamp = (value) => {
+        const d = new Date(value);
+        return isNaN(d) ? 0 : d.getTime();
+      };
+      const sortedByDateDesc = [...jobsArray].sort((a, b) => {
+        return toTimestamp(b?.postedDate) - toTimestamp(a?.postedDate);
+      });
+      setJobs(sortedByDateDesc);
       
     } catch (err) {
       console.error('Search error:', err);
