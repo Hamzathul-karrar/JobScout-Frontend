@@ -98,8 +98,14 @@ const SearchJobGoogle = () => {
         createdAt: new Date().toISOString(),
         jobs: sortedJobs,
       };
-      // Prepend to existing groups
-      const updatedGroups = [newGroup, ...groups];
+      // Remove any existing group with same title+location (case-insensitive), then prepend new group
+      const updatedGroups = [
+        newGroup,
+        ...groups.filter(g =>
+          (g?.jobTitle || '').trim().toLowerCase() !== normalizedTitle.toLowerCase() ||
+          (g?.location || '').trim().toLowerCase() !== normalizedLocation.toLowerCase()
+        ),
+      ];
       setGroups(updatedGroups);
       try {
         localStorage.setItem('searchJobGroups', JSON.stringify(updatedGroups));
