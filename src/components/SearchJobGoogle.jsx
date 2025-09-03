@@ -1,6 +1,78 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SearchJobGoogle.css';
+
+// Helpers kept module-scoped so they are stable and reusable
+const toTimestamp = (value) => {
+  const d = new Date(value);
+  return isNaN(d) ? 0 : d.getTime();
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  } catch {
+    return 'N/A';
+  }
+};
+
+const truncateText = (text, maxLength = 150) => {
+  if (!text) return '';
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+};
+
+// Normalize a jobs array: sort and precompute display fields to reduce render-time work
+const normalizeJobs = (jobs) => {
+  const safeJobs = Array.isArray(jobs) ? jobs : [];
+  const sorted = [...safeJobs].sort((a, b) => toTimestamp(b?.postedDate) - toTimestamp(a?.postedDate));
+  return sorted.map((job) => ({
+    ...job,
+    companyDisplay: job?.company || 'N/A',
+    titleDisplay: job?.title || 'N/A',
+    descriptionShort: truncateText(job?.description || 'No description available'),
+    postedDateDisplay: formatDate(job?.postedDate),
+    linkHref: job?.link || '',
+  }));
+};
+
+const JobRow = memo(({ job }) => {
+  return (
+    <tr className="job-row">
+      <td className="company-cell">
+        <strong>{job.companyDisplay}</strong>
+      </td>
+      <td className="title-cell">
+        <strong>{job.titleDisplay}</strong>
+      </td>
+      <td className="description-cell">
+        {job.descriptionShort}
+      </td>
+      <td className="date-cell">
+        {job.postedDateDisplay}
+      </td>
+      <td className="action-cell">
+        {job.linkHref ? (
+          <a 
+            href={job.linkHref} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="apply-button"
+          >
+            Apply
+          </a>
+        ) : (
+          <span className="no-link">No link available</span>
+        )}
+      </td>
+    </tr>
+  );
+});
 
 const SearchJobGoogle = () => {
   const navigate = useNavigate();
@@ -12,10 +84,6 @@ const SearchJobGoogle = () => {
   const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
-    const toTimestamp = (value) => {
-      const d = new Date(value);
-      return isNaN(d) ? 0 : d.getTime();
-    };
     try {
       const savedGroupsRaw = localStorage.getItem('searchJobGroups');
       if (savedGroupsRaw) {
@@ -24,9 +92,7 @@ const SearchJobGoogle = () => {
           // Ensure each group's jobs are sorted desc
           const normalized = parsedGroups.map((g) => ({
             ...g,
-            jobs: Array.isArray(g?.jobs)
-              ? [...g.jobs].sort((a, b) => toTimestamp(b?.postedDate) - toTimestamp(a?.postedDate))
-              : [],
+            jobs: normalizeJobs(g?.jobs),
           }));
           setGroups(normalized);
           setHasSearched(normalized.length > 0);
@@ -38,7 +104,7 @@ const SearchJobGoogle = () => {
       if (legacyRaw) {
         const legacyJobs = JSON.parse(legacyRaw);
         if (Array.isArray(legacyJobs)) {
-          const sorted = [...legacyJobs].sort((a, b) => toTimestamp(b?.postedDate) - toTimestamp(a?.postedDate));
+          const sorted = normalizeJobs(legacyJobs);
           const migrated = [{
             id: Date.now(),
             jobTitle: 'Previous results',
@@ -59,7 +125,7 @@ const SearchJobGoogle = () => {
     }
   }, []);
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     if (!jobTitle.trim() || !location.trim()) {
       setError('Please fill in both Job Title and Location fields');
       return;
@@ -83,14 +149,10 @@ const SearchJobGoogle = () => {
 
       const data = await response.json();
       const jobsArray = data?.jobs || data || [];
-      const toTimestamp = (value) => {
-        const d = new Date(value);
-        return isNaN(d) ? 0 : d.getTime();
-      };
       // Create new group for this query
       const normalizedTitle = jobTitle.trim();
       const normalizedLocation = location.trim();
-      const sortedJobs = [...jobsArray].sort((a, b) => toTimestamp(b?.postedDate) - toTimestamp(a?.postedDate));
+      const sortedJobs = normalizeJobs(jobsArray);
       const newGroup = {
         id: Date.now(),
         jobTitle: normalizedTitle,
@@ -116,30 +178,19 @@ const SearchJobGoogle = () => {
     } catch (err) {
       console.error('Search error:', err);
       setError('Failed to fetch jobs. Please check your connection and try again.');
-      setJobs([]);
     } finally {
       setIsSearching(false);
     }
-  };
+  }, [jobTitle, location, groups]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+  const handleClear = useCallback(() => {
+    setGroups([]);
     try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
+      localStorage.removeItem('searchJobGroups');
     } catch {
-      return 'N/A';
+      // ignore
     }
-  };
-
-  const truncateText = (text, maxLength = 150) => {
-    if (!text) return '';
-    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-  };
+  }, []);
 
   return (
     <div className="search-job-container">
@@ -215,14 +266,7 @@ const SearchJobGoogle = () => {
             <h2 className="results-title">Search Results</h2>
             <button
               className="clear-button"
-              onClick={() => {
-                setGroups([]);
-                try {
-                  localStorage.removeItem('searchJobGroups');
-                } catch {
-                  // ignore
-                }
-              }}
+              onClick={handleClear}
             >
               Clear
             </button>
@@ -247,34 +291,7 @@ const SearchJobGoogle = () => {
                   </thead>
                   <tbody>
                     {group.jobs.map((job, index) => (
-                      <tr key={index} className="job-row">
-                        <td className="company-cell">
-                          <strong>{job.company || 'N/A'}</strong>
-                        </td>
-                        <td className="title-cell">
-                          <strong>{job.title || 'N/A'}</strong>
-                        </td>
-                        <td className="description-cell">
-                          {truncateText(job.description || 'No description available')}
-                        </td>
-                        <td className="date-cell">
-                          {formatDate(job.postedDate)}
-                        </td>
-                        <td className="action-cell">
-                          {job.link ? (
-                            <a 
-                              href={job.link} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="apply-button"
-                            >
-                              Apply
-                            </a>
-                          ) : (
-                            <span className="no-link">No link available</span>
-                          )}
-                        </td>
-                      </tr>
+                      <JobRow key={job.linkHref || index} job={job} />
                     ))}
                   </tbody>
                 </table>
