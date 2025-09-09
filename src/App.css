@@ -1,4 +1,90 @@
-/* Modern Glassmorphic Design - Based on SearchJob Styles */
+/* Modern Glassmorphic Design - Optimized Mobile Navigation */
+/* Top Navigation */
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 35, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  padding: 16px 0;
+  transition: all 0.3s ease;
+}
+
+.top-nav .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #7877c6, #ff6384);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nav-btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.nav-btn.signin {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.nav-btn.signin:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.nav-btn.signup {
+  background: linear-gradient(135deg, #7877c6 0%, #ff6384 100%);
+  color: white;
+  box-shadow: 0 8px 24px rgba(120, 119, 198, 0.3);
+}
+
+.nav-btn.signup:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(120, 119, 198, 0.4);
+  background: linear-gradient(135deg, #8a89d4 0%, #ff7a9a 100%);
+}
 
 /* Base Container Styling */
 .container {
@@ -16,7 +102,7 @@
   background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
   color: white;
   overflow: hidden;
-  padding: 20px;
+  padding: 80px 20px 20px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -366,8 +452,60 @@
 .feature:nth-child(3) { animation-delay: 0.3s; }
 .feature:nth-child(4) { animation-delay: 0.4s; }
 
-/* Responsive Design */
+/* Tablet Optimization */
+@media (max-width: 900px) {
+  .top-nav .container {
+    padding: 0 16px;
+  }
+  
+  .nav-brand {
+    font-size: 1.5rem;
+  }
+  
+  .nav-btn {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+}
+
+/* Large Mobile Optimization */
 @media (max-width: 768px) {
+  .top-nav {
+    padding: 14px 0;
+    background: rgba(15, 15, 35, 0.98);
+  }
+  
+  .top-nav .container {
+    padding: 0 16px;
+    gap: 12px;
+  }
+  
+  .nav-brand {
+    font-size: 1.4rem;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .nav-buttons {
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  
+  .nav-btn {
+    padding: 11px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    min-width: 85px;
+    border-radius: 10px;
+  }
+  
+  .nav-btn.signin {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  
   .title {
     font-size: 3rem;
   }
@@ -405,23 +543,94 @@
   .why h2, .cta h2 {
     font-size: 2.5rem;
   }
-
+  
   .why {
     padding: 80px 0;
   }
-
+  
   .cta {
     padding: 80px 0;
   }
-
+  
   .hero {
     min-height: 80vh;
+    padding-top: 70px;
   }
 }
 
+/* Standard Mobile Optimization */
+@media (max-width: 580px) {
+  .top-nav {
+    padding: 12px 0;
+  }
+  
+  .top-nav .container {
+    padding: 0 14px;
+    gap: 8px;
+  }
+  
+  .nav-brand {
+    font-size: 1.3rem;
+  }
+  
+  .nav-buttons {
+    gap: 8px;
+  }
+  
+  .nav-btn {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 75px;
+    border-radius: 8px;
+  }
+}
+
+/* Small Mobile Optimization */
 @media (max-width: 480px) {
   html {
     font-size: 15px;
+  }
+  
+  .top-nav {
+    padding: 10px 0;
+    background: rgba(15, 15, 35, 1);
+    backdrop-filter: none;
+  }
+  
+  .top-nav .container {
+    padding: 0 12px;
+    gap: 6px;
+  }
+  
+  .nav-brand {
+    font-size: 1.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .nav-buttons {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  
+  .nav-btn {
+    padding: 9px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    border-radius: 6px;
+    min-width: 65px;
+    min-height: 42px;
+  }
+  
+  .nav-btn.signin {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: none;
+  }
+  
+  .nav-btn.signup {
+    box-shadow: 0 4px 12px rgba(120, 119, 198, 0.3);
   }
   
   /* Reduce or remove blur and heavy shadows */
@@ -431,98 +640,165 @@
     backdrop-filter: none;
     background: rgba(255, 255, 255, 0.06);
   }
-
+  
   .feature {
     box-shadow: 0 8px 16px rgba(0,0,0,0.25);
     padding: 24px 16px;
     border-radius: 20px;
   }
-
+  
   /* Simplify backgrounds */
   .hero::before,
   .cta::before {
     background: none;
   }
+  
   .hero-bg {
     display: none;
   }
-
+  
   /* Tone down animations */
   .feature {
     animation: none;
     opacity: 1;
   }
-
+  
   /* Tighter layout and type */
   .container {
-    padding: 0 16px;
+    padding: 0 12px;
   }
+  
   .hero {
     padding: 12px;
+    padding-top: 60px;
   }
+  
   .title {
     font-size: 2.1rem;
     line-height: 1.15;
     margin-bottom: 14px;
   }
+  
   .subtitle {
     font-size: 0.95rem;
     line-height: 1.55;
     margin-bottom: 28px;
   }
+  
   .badge {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     padding: 8px 14px;
     letter-spacing: 0.5px;
     margin-bottom: 16px;
     border-radius: 18px;
   }
+  
   .hero-ctas {
     gap: 12px;
   }
+  
   .cta-btn {
-    padding: 10px 16px;
-    font-size: 0.9rem;
+    padding: 12px 16px;
+    font-size: 0.85rem;
     letter-spacing: 0.2px;
     min-height: 44px;
     min-width: 44px;
-    border-radius: 10px;
+    border-radius: 8px;
     text-transform: none;
   }
-  .cta-btn .icon { font-size: 1rem; }
+  
+  .cta-btn .icon { 
+    font-size: 1rem; 
+  }
+  
   .why h2, .cta h2 {
     font-size: 2rem;
     margin-bottom: 12px;
   }
+  
   .section-sub {
     font-size: 0.95rem;
     margin-bottom: 40px;
   }
+  
   .features {
     grid-template-columns: 1fr;
     gap: 20px;
   }
+  
   .feature .icon {
     font-size: 2.6rem;
     margin-bottom: 16px;
   }
+  
   .feature h3 {
     font-size: 1.2rem;
     margin-bottom: 10px;
   }
+  
   .why {
     padding: 64px 0;
   }
+  
   .cta {
     padding: 64px 0;
   }
 }
 
+/* Extra Small Mobile */
+@media (max-width: 360px) {
+  .top-nav .container {
+    padding: 0 10px;
+  }
+  
+  .nav-brand {
+    font-size: 1.15rem;
+  }
+  
+  .nav-btn {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 55px;
+    min-height: 38px;
+  }
+  
+  .container {
+    padding: 0 10px;
+  }
+}
+
+/* Ultra Small Mobile - Minimum readable sizes */
+@media (max-width: 320px) {
+  .nav-brand {
+    font-size: 1.1rem;
+  }
+  
+  .nav-btn {
+    padding: 7px 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    min-width: 50px;
+    min-height: 36px;
+    letter-spacing: 0.1px;
+  }
+  
+  .nav-buttons {
+    gap: 4px;
+  }
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .feature { animation: none; }
-  .cta-btn { transition: none; }
-  html { scroll-behavior: auto; }
+  .feature { 
+    animation: none; 
+  }
+  .cta-btn { 
+    transition: none; 
+  }
+  html { 
+    scroll-behavior: auto; 
+  }
 }
 
 /* Custom Scrollbar */

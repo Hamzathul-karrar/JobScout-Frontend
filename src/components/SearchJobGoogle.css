@@ -297,7 +297,7 @@
 .group-header { margin-bottom: 12px; }
 
 /* Group block wrapper spacing */
-.group-block { margin-bottom: 28px; }
+.group-block { margin-bottom: 50px; }
 .clear-button {
   background: rgba(239, 68, 68, 0.1);
   color: #fecaca;

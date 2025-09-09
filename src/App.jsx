@@ -3,6 +3,8 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import JobPortals from "./components/JobPortals";
 import SearchJobGoogle from "./components/SearchJobGoogle";
+import Register from "./components/Register";
+import Login from "./components/Login";
 
 function App() {
   const navigate = useNavigate();
@@ -15,12 +17,33 @@ function App() {
     navigate("/search-jobs");
   };
 
+  const handleSignUp = () => {
+    navigate("/register");
+  };
+
+  const handleSignIn = () => {
+    navigate("/login");
+  };
+
   return (
     <Routes>
       <Route
         path="/"
         element={
           <div>
+            <nav className="top-nav">
+              <div className="container">
+                <div className="nav-brand">JobScout</div>
+                <div className="nav-buttons">
+                  <button className="nav-btn signin" onClick={handleSignIn}>
+                    Sign In
+                  </button>
+                  <button className="nav-btn signup" onClick={handleSignUp}>
+                    Sign Up
+                  </button>
+                </div>
+              </div>
+            </nav>
             <header className="hero">
               <div className="hero-bg" aria-hidden="true"></div>
               <div className="container hero-inner">
@@ -124,6 +147,8 @@ function App() {
 
       <Route path="/jobportals" element={<JobPortals />} />
       <Route path="/search-jobs" element={<SearchJobGoogle />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
     </Routes>
   );
 }

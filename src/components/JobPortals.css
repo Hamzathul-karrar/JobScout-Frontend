@@ -115,16 +115,12 @@
 }
 
 .back-btn {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
   border-color: transparent !important;
   color: white !important;
-  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
 }
 
 .back-btn:hover {
-  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%) !important;
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(239, 68, 68, 0.4);
 }
 
 /* Container Styles */
@@ -357,7 +353,6 @@
 }
 
 .heart-btn.favorite {
-  /* background: linear-gradient(135deg, #ff6384 0%, #ef4444 100%); */
   border-color: transparent;
   color: white;
   box-shadow: 0 8px 24px rgba(255, 99, 132, 0.4);
@@ -366,7 +361,6 @@
 
 .heart-btn.favorite:hover {
   transform: scale(1.2) rotate(-5deg);
-  background: linear-gradient(135deg, #ff7a9a 0%, #f87171 100%);
   box-shadow: 0 12px 32px rgba(255, 99, 132, 0.5);
 }
 
