@@ -472,9 +472,12 @@
   }
 
   .nav-btn {
-    padding: 10px 20px;
+    padding: 8px 16px;
     font-size: 0.9rem;
-    border-radius: 14px;
+    border-radius: 12px;
+    min-height: 44px;
+    letter-spacing: 0.3px;
+    font-weight: 600;
   }
 }
 
@@ -494,35 +497,87 @@
   }
 
   .nav-btn {
-    padding: 8px 16px;
+    padding: 6px 12px;
     font-size: 0.85rem;
-    border-radius: 12px;
+    border-radius: 10px;
+    min-height: 44px;
+    min-width: 44px;
+    letter-spacing: 0.2px;
+    text-transform: none;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
   .portal-card {
-    padding: 16px;
+    padding: 14px;
     border-radius: 14px;
     min-height: 70px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
   }
 
   .portal-name {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .heart-btn {
-    min-width: 42px;
-    min-height: 42px;
-    font-size: 1.2rem;
-    padding: 10px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1rem;
+    padding: 8px;
   }
 
   .section-title {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+    font-size: 1.4rem;
+    margin-bottom: 16px;
   }
 
   .jobscout-title {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
+  }
+
+  .navigation {
+    gap: 8px;
+  }
+
+  /* Disable heavy effects and overlays on mobile */
+  .portals-header,
+  .no-favorites,
+  .portal-card,
+  .nav-btn,
+  .heart-btn {
+    backdrop-filter: none;
+  }
+  .job-portals::before {
+    background: none;
+  }
+  .portals-header,
+  .portal-card {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+  }
+  .portal-card:hover,
+  .nav-btn:hover,
+  .heart-btn:hover {
+    transform: none;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+  }
+  .portal-card::before {
+    opacity: 0 !important;
+  }
+
+  /* Tighten inner spacing */
+  .portals-container {
+    padding: 0 12px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .portal-card,
+  .heart-icon,
+  .heart-btn,
+  .nav-btn {
+    animation: none !important;
+    transition: none !important;
   }
 }
 

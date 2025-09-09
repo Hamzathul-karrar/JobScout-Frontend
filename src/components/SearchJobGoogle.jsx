@@ -42,6 +42,7 @@ const normalizeJobs = (jobs) => {
 };
 
 const JobRow = memo(({ job }) => {
+
   return (
     <tr className="job-row">
       <td className="company-cell">
@@ -51,7 +52,9 @@ const JobRow = memo(({ job }) => {
         <strong>{job.titleDisplay}</strong>
       </td>
       <td className="description-cell">
-        {job.descriptionShort}
+        <div className="description-text">
+          {job?.description || job?.descriptionShort}
+        </div>
       </td>
       <td className="date-cell">
         {job.postedDateDisplay}
