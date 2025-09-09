@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useEffect, useCallback, memo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SearchJobGoogle.css';
 
@@ -85,6 +85,43 @@ const SearchJobGoogle = () => {
   const [groups, setGroups] = useState([]); // [{ id, jobTitle, location, createdAt, jobs: [] }]
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [paginationMap, setPaginationMap] = useState({}); // { [groupId]: currentPage }
+
+  const JOBS_PER_PAGE = 10;
+
+  const groupRefs = useRef({});
+
+  const scrollGroupIntoView = (groupId) => {
+    try {
+      const node = groupRefs.current?.[groupId];
+      if (node && typeof node.scrollIntoView === 'function') {
+        node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } catch {}
+  };
+
+  const loadSavedPagination = (groupList) => {
+    try {
+      const raw = localStorage.getItem('searchJobPagination');
+      const saved = raw ? JSON.parse(raw) : {};
+      const reconciled = {};
+      const list = Array.isArray(groupList) ? groupList : [];
+      for (const g of list) {
+        const totalPages = Math.max(1, Math.ceil((g?.jobs?.length || 0) / JOBS_PER_PAGE));
+        const savedPage = typeof saved[g.id] === 'number' ? saved[g.id] : 1;
+        reconciled[g.id] = Math.min(Math.max(1, savedPage), totalPages);
+      }
+      setPaginationMap(reconciled);
+    } catch {
+      setPaginationMap({});
+    }
+  };
+
+  const persistPagination = (map) => {
+    try {
+      localStorage.setItem('searchJobPagination', JSON.stringify(map));
+    } catch {}
+  };
 
   useEffect(() => {
     try {
@@ -99,6 +136,7 @@ const SearchJobGoogle = () => {
           }));
           setGroups(normalized);
           setHasSearched(normalized.length > 0);
+          loadSavedPagination(normalized);
           return;
         }
       }
@@ -121,6 +159,7 @@ const SearchJobGoogle = () => {
             localStorage.setItem('searchJobGroups', JSON.stringify(migrated));
             localStorage.removeItem('searchJobs');
           } catch {}
+          loadSavedPagination(migrated);
         }
       }
     } catch {
@@ -197,6 +236,10 @@ const SearchJobGoogle = () => {
       } catch {
         // ignore storage failures
       }
+      // Reset pagination for new group to page 1
+      const nextPagination = { ...paginationMap, [newGroup.id]: 1 };
+      setPaginationMap(nextPagination);
+      persistPagination(nextPagination);
       
     } catch (err) {
       console.error('Search error:', err);
@@ -218,6 +261,44 @@ const SearchJobGoogle = () => {
     }
   }, [jobTitle, location, groups]);
 
+  const handleChangePage = useCallback((groupId, direction) => {
+    setPaginationMap((prev) => {
+      const current = typeof prev[groupId] === 'number' ? prev[groupId] : 1;
+      const group = groups.find((g) => g.id === groupId);
+      const totalPages = Math.max(1, Math.ceil(((group?.jobs?.length) || 0) / JOBS_PER_PAGE));
+      let next = current;
+      if (direction === 'next') {
+        next = Math.min(current + 1, totalPages);
+      } else if (direction === 'prev') {
+        next = Math.max(current - 1, 1);
+      } else if (direction === 'first') {
+        next = 1;
+      } else if (direction === 'last') {
+        next = totalPages;
+      }
+      const updated = { ...prev, [groupId]: next };
+      persistPagination(updated);
+      return updated;
+    });
+    // Smooth scroll the group's block into view on page change
+    requestAnimationFrame(() => scrollGroupIntoView(groupId));
+  }, [groups]);
+
+  const handleClearGroup = useCallback((groupId) => {
+    setGroups((prev) => {
+      const filtered = prev.filter((g) => g.id !== groupId);
+      try {
+        localStorage.setItem('searchJobGroups', JSON.stringify(filtered));
+      } catch {}
+      return filtered;
+    });
+    setPaginationMap((prev) => {
+      const { [groupId]: _removed, ...rest } = prev || {};
+      persistPagination(rest);
+      return rest;
+    });
+  }, []);
+
   const handleClear = useCallback(() => {
     setGroups([]);
     try {
@@ -225,6 +306,10 @@ const SearchJobGoogle = () => {
     } catch {
       // ignore
     }
+    setPaginationMap({});
+    try {
+      localStorage.removeItem('searchJobPagination');
+    } catch {}
   }, []);
 
   return (
@@ -299,40 +384,88 @@ const SearchJobGoogle = () => {
         <div className="results-container">
           <div className="results-header">
             <h2 className="results-title">Search Results</h2>
-            <button
-              className="clear-button"
-              onClick={handleClear}
-            >
-              Clear
-            </button>
           </div>
-          {groups.map((group) => (
-            <div key={group.id} style={{ marginBottom: '28px' }}>
-              <div className="results-header" style={{ marginBottom: '12px' }}>
-                <h3 className="results-title" style={{ margin: 0, fontSize: '1.4rem' }}>
-                  {group.jobs.length} job{group.jobs.length !== 1 ? 's' : ''} matched for {group.jobTitle} in {group.location}
-                </h3>
+          {groups.map((group) => {
+            const currentPage = typeof paginationMap[group.id] === 'number' ? paginationMap[group.id] : 1;
+            const totalPages = Math.max(1, Math.ceil((group.jobs.length || 0) / JOBS_PER_PAGE));
+            const startIndex = (currentPage - 1) * JOBS_PER_PAGE;
+            const endIndex = startIndex + JOBS_PER_PAGE;
+            const paginatedJobs = group.jobs.slice(startIndex, endIndex);
+            return (
+              <div
+                key={group.id}
+                className="group-block"
+                ref={(el) => {
+                  if (el) {
+                    groupRefs.current[group.id] = el;
+                  }
+                }}
+              >
+                <div className="results-header group-header">
+                  <h3 className="group-subtitle">
+                    {group.jobs.length} job{group.jobs.length !== 1 ? 's' : ''} matched for {group.jobTitle} in {group.location}
+                  </h3>
+                  <button
+                    className="clear-button"
+                    onClick={() => handleClearGroup(group.id)}
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className="jobs-table-container">
+                  <table className="jobs-table">
+                    <thead>
+                      <tr>
+                        <th>Company</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Posted Date</th>
+                        <th>Link</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paginatedJobs.map((job, index) => (
+                        <JobRow key={job.linkHref || index} job={job} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="pagination-controls">
+                  <button
+                    className="pager-button"
+                    onClick={() => handleChangePage(group.id, 'first')}
+                    disabled={currentPage <= 1}
+                  >
+                    «
+                  </button>
+                  <button
+                    className="pager-button"
+                    onClick={() => handleChangePage(group.id, 'prev')}
+                    disabled={currentPage <= 1}
+                  >
+                    {'<'}
+                  </button>
+                  <span className="page-indicator">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    className="pager-button"
+                    onClick={() => handleChangePage(group.id, 'next')}
+                    disabled={currentPage >= totalPages}
+                  >
+                    {'>'}
+                  </button>
+                  <button
+                    className="pager-button"
+                    onClick={() => handleChangePage(group.id, 'last')}
+                    disabled={currentPage >= totalPages}
+                  >
+                    »
+                  </button>
+                </div>
               </div>
-              <div className="jobs-table-container">
-                <table className="jobs-table">
-                  <thead>
-                    <tr>
-                      <th>Company</th>
-                      <th>Title</th>
-                      <th>Description</th>
-                      <th>Posted Date</th>
-                      <th>Link</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {group.jobs.map((job, index) => (
-                      <JobRow key={job.linkHref || index} job={job} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
