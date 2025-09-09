@@ -139,15 +139,35 @@ const SearchJobGoogle = () => {
     setHasSearched(true);
 
     try {
+      // Create an AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch(`http://localhost:8082/searchJob?jobTitle=${encodeURIComponent(jobTitle.trim())}&location=${encodeURIComponent(location.trim())}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Try to get error message from response body
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch {
+          // If we can't parse the error response, use the status message
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -180,7 +200,19 @@ const SearchJobGoogle = () => {
       
     } catch (err) {
       console.error('Search error:', err);
-      setError('Failed to fetch jobs. Please check your connection and try again.');
+      
+      // Handle different types of errors with specific messages
+      if (err.name === 'AbortError') {
+        setError('Request timed out. The server is taking too long to respond. Please try again.');
+      } else if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        setError('Unable to connect to the server. Try again later.');
+      } else if (err.message.includes('HTTP error! status:') || err.message.includes('Server error:')) {
+        setError(`Server error: ${err.message}`);
+      } else if (err.message.includes('Failed to parse')) {
+        setError('Invalid response from server. Please try again.');
+      } else {
+        setError(err.message || 'Failed to fetch jobs. Please check your connection and try again.');
+      }
     } finally {
       setIsSearching(false);
     }
