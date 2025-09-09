@@ -361,8 +361,9 @@
 /* === FIX ENDS HERE === */
 .jobs-table tbody tr {
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
   position: relative;
+  border-left: 3px solid transparent; /* Reserve space to avoid layout shift */
 }
 .jobs-table tbody tr::before {
   position: absolute;
@@ -379,7 +380,6 @@
 }
 .jobs-table tbody tr:hover {
   background: rgba(255, 255, 255, 0.02);
-  transform: translateX(4px);
   border-left: 3px solid #7877c6;
 }
 .jobs-table td {
