@@ -464,3 +464,78 @@
     gap: 12px;
   }
 }
+
+/* Tooltip inside input */
+.input-with-tooltip {
+  position: relative;
+}
+
+.input-with-tooltip .register-input {
+  padding-right: 44px; /* space for the icon */
+}
+
+.tooltip-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.16);
+  color: #f7fafc;
+  cursor: default;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.tooltip-icon:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.tooltip-content {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translateY(calc(-100% - 8px));
+  background: rgba(17, 24, 39, 0.96);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.2rem;
+  width: max-content;
+  max-width: 280px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.tooltip-icon:hover + .tooltip-content,
+.tooltip-icon:focus + .tooltip-content,
+.tooltip-icon:focus-visible + .tooltip-content {
+  opacity: 1;
+}
+
+/* Arrow */
+.tooltip-content::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  right: 12px;
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: rgba(17, 24, 39, 0.96) transparent transparent transparent;
+}
+
+.register-input.input-error {
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.15), 0 8px 32px rgba(248, 113, 113, 0.15);
+}
