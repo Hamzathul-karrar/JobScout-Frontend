@@ -224,7 +224,6 @@ function Register() {
               {isSubmitting ? (
                 <span className="loading-spinner">
                   <span className="spinner" />
-                  Creating...
                 </span>
               ) : (
                 "Sign up"

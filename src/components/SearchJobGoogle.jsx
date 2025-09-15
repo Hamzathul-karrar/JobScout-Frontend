@@ -42,39 +42,40 @@ const truncateText = (text, maxLength = 150) => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 };
 
-// FIXED: Check if jobs are already normalized and avoid double processing
+// Normalize backend jobs once: sort by postedDate desc, assign sequential ids; skip resort on reload
 const normalizeJobs = (jobs) => {
   const safeJobs = Array.isArray(jobs) ? jobs : [];
-  
-  const processedJobs = safeJobs.map((job, originalIndex) => {
-    // Check if job is already normalized (has sortTimestamp)
-    if (job.sortTimestamp && job.companyDisplay && job.titleDisplay) {
-      // Job is already normalized, just return it
-      return job;
-    }
-    
-    // Job needs normalization
-    return {
-      ...job,
-      sortTimestamp: toTimestamp(job?.postedDate),
-      originalIndex,
-      companyDisplay: job?.company || 'N/A',
-      titleDisplay: job?.title || 'N/A',
-      descriptionShort: truncateText(job?.description || 'No description available'),
-      postedDateDisplay: formatDate(job?.postedDate),
-      linkHref: job?.link || '',
-    };
-  });
 
-  // ALWAYS sort by sortTimestamp descending, regardless of whether jobs were pre-normalized
-  processedJobs.sort((a, b) => {
+  // If every job already has a sortTimestamp, assume it's already normalized and in desired order
+  const alreadyNormalized = safeJobs.length > 0 && safeJobs.every(j => j && typeof j.sortTimestamp === 'number');
+  if (alreadyNormalized) {
+    return safeJobs;
+  }
+
+  const enriched = safeJobs.map((job, originalIndex) => ({
+    ...job,
+    sortTimestamp: toTimestamp(job?.postedDate),
+    originalIndex,
+    companyDisplay: job?.company || 'N/A',
+    titleDisplay: job?.title || 'N/A',
+    descriptionShort: truncateText(job?.description || 'No description available'),
+    postedDateDisplay: formatDate(job?.postedDate),
+    linkHref: job?.link || '',
+  }));
+
+  // Sort latest first
+  enriched.sort((a, b) => {
     if (a.sortTimestamp !== b.sortTimestamp) {
-      return b.sortTimestamp - a.sortTimestamp; // Descending
+      return b.sortTimestamp - a.sortTimestamp;
     }
     return (a.originalIndex || 0) - (b.originalIndex || 0);
   });
 
-  return processedJobs;
+  // Assign sequential ids based on sorted order (0 = most recent)
+  return enriched.map((job, idx) => ({
+    ...job,
+    id: idx,
+  }));
 };
 
 const JobRow = memo(({ job }) => {
@@ -407,7 +408,6 @@ const SearchJobGoogle = () => {
           {isSearching ? (
             <span className="loading-spinner">
               <div className="spinner"></div>
-              Searching...
             </span>
           ) : (
             'Search Jobs'

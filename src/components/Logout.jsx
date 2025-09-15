@@ -7,8 +7,17 @@ function Logout() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
+    const confirmed = window.confirm(
+      'Logging out will delete your saved jobs and favorited job portals from this device.\n\nDo you want to continue?'
+    );
+    if (!confirmed) return;
+
     setIsLoggingOut(true);
     try {
+      try {
+        localStorage.clear();
+      } catch {}
+
       await logout();
     } catch (error) {
       console.error('Logout failed:', error);
@@ -32,7 +41,6 @@ function Logout() {
       {isLoggingOut ? (
         <span className="loading-spinner">
           <span className="spinner" />
-          Logging out...
         </span>
       ) : (
         <svg

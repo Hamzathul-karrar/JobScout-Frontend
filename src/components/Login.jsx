@@ -161,7 +161,6 @@ function Login() {
               {isSubmitting ? (
                 <span className="loading-spinner">
                   <span className="spinner" />
-                  Signing in...
                 </span>
               ) : (
                 "Sign in"
