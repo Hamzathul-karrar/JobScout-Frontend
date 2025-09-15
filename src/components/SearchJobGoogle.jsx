@@ -3,10 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './SearchJobGoogle.css';
 
-// Helpers kept module-scoped so they are stable and reusable
 const toTimestamp = (value) => {
-  const d = new Date(value);
-  return isNaN(d) ? 0 : d.getTime();
+  try {
+    if (!value && value !== 0) return 0;
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+    if (value instanceof Date) return isNaN(value) ? 0 : value.getTime();
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (/^\d{10,13}$/.test(trimmed)) {
+        const num = parseInt(trimmed, 10);
+        return trimmed.length === 10 ? num * 1000 : num;
+      }
+      const d = new Date(trimmed);
+      return isNaN(d) ? 0 : d.getTime();
+    }
+    return 0;
+  } catch {
+    return 0;
+  }
 };
 
 const formatDate = (dateString) => {
@@ -28,22 +42,42 @@ const truncateText = (text, maxLength = 150) => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 };
 
-// Normalize a jobs array: sort and precompute display fields to reduce render-time work
+// FIXED: Check if jobs are already normalized and avoid double processing
 const normalizeJobs = (jobs) => {
   const safeJobs = Array.isArray(jobs) ? jobs : [];
-  const sorted = [...safeJobs].sort((a, b) => toTimestamp(b?.postedDate) - toTimestamp(a?.postedDate));
-  return sorted.map((job) => ({
-    ...job,
-    companyDisplay: job?.company || 'N/A',
-    titleDisplay: job?.title || 'N/A',
-    descriptionShort: truncateText(job?.description || 'No description available'),
-    postedDateDisplay: formatDate(job?.postedDate),
-    linkHref: job?.link || '',
-  }));
+  
+  const processedJobs = safeJobs.map((job, originalIndex) => {
+    // Check if job is already normalized (has sortTimestamp)
+    if (job.sortTimestamp && job.companyDisplay && job.titleDisplay) {
+      // Job is already normalized, just return it
+      return job;
+    }
+    
+    // Job needs normalization
+    return {
+      ...job,
+      sortTimestamp: toTimestamp(job?.postedDate),
+      originalIndex,
+      companyDisplay: job?.company || 'N/A',
+      titleDisplay: job?.title || 'N/A',
+      descriptionShort: truncateText(job?.description || 'No description available'),
+      postedDateDisplay: formatDate(job?.postedDate),
+      linkHref: job?.link || '',
+    };
+  });
+
+  // ALWAYS sort by sortTimestamp descending, regardless of whether jobs were pre-normalized
+  processedJobs.sort((a, b) => {
+    if (a.sortTimestamp !== b.sortTimestamp) {
+      return b.sortTimestamp - a.sortTimestamp; // Descending
+    }
+    return (a.originalIndex || 0) - (b.originalIndex || 0);
+  });
+
+  return processedJobs;
 };
 
 const JobRow = memo(({ job }) => {
-
   return (
     <tr className="job-row">
       <td className="company-cell">
@@ -80,20 +114,18 @@ const JobRow = memo(({ job }) => {
 
 const SearchJobGoogle = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, makeAuthenticatedRequest } = useAuth();
   const [jobTitle, setJobTitle] = useState('');
   const [location, setLocation] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [groups, setGroups] = useState([]); // [{ id, jobTitle, location, createdAt, jobs: [] }]
+  const [groups, setGroups] = useState([]);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
-  const [paginationMap, setPaginationMap] = useState({}); // { [groupId]: currentPage }
+  const [paginationMap, setPaginationMap] = useState({});
 
   const JOBS_PER_PAGE = 10;
-
   const groupRefs = useRef({});
 
-  // Check authentication and redirect if not logged in
   useEffect(() => {
     if (!isLoading && !isAuthenticated()) {
       navigate('/login');
@@ -138,7 +170,7 @@ const SearchJobGoogle = () => {
       if (savedGroupsRaw) {
         const parsedGroups = JSON.parse(savedGroupsRaw);
         if (Array.isArray(parsedGroups)) {
-          // Ensure each group's jobs are sorted desc
+          // FIXED: Normalize jobs but avoid double processing
           const normalized = parsedGroups.map((g) => ({
             ...g,
             jobs: normalizeJobs(g?.jobs),
@@ -149,7 +181,7 @@ const SearchJobGoogle = () => {
           return;
         }
       }
-      // Legacy migration from 'searchJobs' (flat array)
+      
       const legacyRaw = localStorage.getItem('searchJobs');
       if (legacyRaw) {
         const legacyJobs = JSON.parse(legacyRaw);
@@ -187,22 +219,18 @@ const SearchJobGoogle = () => {
     setHasSearched(true);
 
     try {
-      // Create an AbortController for timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-      
-      const response = await fetch(`http://localhost:8082/searchJob?jobTitle=${encodeURIComponent(jobTitle.trim())}&location=${encodeURIComponent(location.trim())}`, {
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      const endpoint = `/searchJob?jobTitle=${encodeURIComponent(jobTitle.trim())}&location=${encodeURIComponent(location.trim())}`;
+      const response = await makeAuthenticatedRequest(endpoint, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         signal: controller.signal
       });
-      
+
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        // Try to get error message from response body
         let errorMessage = `HTTP error! status: ${response.status}`;
         try {
           const errorData = await response.json();
@@ -212,7 +240,6 @@ const SearchJobGoogle = () => {
             errorMessage = errorData.error;
           }
         } catch {
-          // If we can't parse the error response, use the status message
           errorMessage = `Server error: ${response.status} ${response.statusText}`;
         }
         throw new Error(errorMessage);
@@ -220,10 +247,10 @@ const SearchJobGoogle = () => {
 
       const data = await response.json();
       const jobsArray = data?.jobs || data || [];
-      // Create new group for this query
       const normalizedTitle = jobTitle.trim();
       const normalizedLocation = location.trim();
       const sortedJobs = normalizeJobs(jobsArray);
+      
       const newGroup = {
         id: Date.now(),
         jobTitle: normalizedTitle,
@@ -231,7 +258,7 @@ const SearchJobGoogle = () => {
         createdAt: new Date().toISOString(),
         jobs: sortedJobs,
       };
-      // Remove any existing group with same title+location (case-insensitive), then prepend new group
+      
       const updatedGroups = [
         newGroup,
         ...groups.filter(g =>
@@ -239,13 +266,14 @@ const SearchJobGoogle = () => {
           (g?.location || '').trim().toLowerCase() !== normalizedLocation.toLowerCase()
         ),
       ];
+      
       setGroups(updatedGroups);
       try {
         localStorage.setItem('searchJobGroups', JSON.stringify(updatedGroups));
       } catch {
         // ignore storage failures
       }
-      // Reset pagination for new group to page 1
+      
       const nextPagination = { ...paginationMap, [newGroup.id]: 1 };
       setPaginationMap(nextPagination);
       persistPagination(nextPagination);
@@ -253,11 +281,13 @@ const SearchJobGoogle = () => {
     } catch (err) {
       console.error('Search error:', err);
       
-      // Handle different types of errors with specific messages
       if (err.name === 'AbortError') {
         setError('Request timed out. The server is taking too long to respond. Please try again.');
       } else if (err.name === 'TypeError' && err.message.includes('fetch')) {
         setError('Unable to connect to the server. Try again later.');
+      } else if (err.message === 'Authentication failed' || err.message === 'Not authenticated') {
+        setError('Your session has expired. Please log in again.');
+        navigate('/login');
       } else if (err.message.includes('HTTP error! status:') || err.message.includes('Server error:')) {
         setError(`Server error: ${err.message}`);
       } else if (err.message.includes('Failed to parse')) {
@@ -289,7 +319,6 @@ const SearchJobGoogle = () => {
       persistPagination(updated);
       return updated;
     });
-    // Smooth scroll the group's block into view on page change
     requestAnimationFrame(() => scrollGroupIntoView(groupId));
   }, [groups]);
 
@@ -321,7 +350,6 @@ const SearchJobGoogle = () => {
     } catch {}
   }, []);
 
-  // Show loading while checking authentication
   if (isLoading) {
     return (
       <div className="search-job-container">
@@ -414,6 +442,7 @@ const SearchJobGoogle = () => {
             const startIndex = (currentPage - 1) * JOBS_PER_PAGE;
             const endIndex = startIndex + JOBS_PER_PAGE;
             const paginatedJobs = group.jobs.slice(startIndex, endIndex);
+            
             return (
               <div
                 key={group.id}
@@ -448,7 +477,7 @@ const SearchJobGoogle = () => {
                     </thead>
                     <tbody>
                       {paginatedJobs.map((job, index) => (
-                        <JobRow key={job.linkHref || index} job={job} />
+                        <JobRow key={job.linkHref || `${job.id}-${index}`} job={job} />
                       ))}
                     </tbody>
                   </table>

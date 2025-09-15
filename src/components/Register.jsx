@@ -139,7 +139,7 @@ function Register() {
                 required
                 autoComplete="name"
               />
-              <span className="tooltip-icon" aria-label="Full name requirements" tabIndex={0}>?</span>
+              <span className="tooltip-icon" aria-label="Full name requirements" tabIndex={0}><i>i</i></span>
               <div className="tooltip-content">Full name must be between 2 and 100 characters.</div>
             </div>
           </div>
@@ -161,7 +161,7 @@ function Register() {
                 required
                 autoComplete="email"
               />
-              <span className="tooltip-icon" aria-label="Email requirements" tabIndex={0}>?</span>
+              <span className="tooltip-icon" aria-label="Email requirements" tabIndex={0}><i>i</i></span>
               <div className="tooltip-content">Enter a valid email.</div>
             </div>
           </div>
@@ -184,7 +184,7 @@ function Register() {
                 autoComplete="new-password"
                 minLength={6}
               />
-              <span className="tooltip-icon" aria-label="Password requirements" tabIndex={0}>?</span>
+              <span className="tooltip-icon" aria-label="Password requirements" tabIndex={0}><i>i</i></span>
               <div className="tooltip-content">At least 6 characters, include both letters and numbers.</div>
             </div>
           </div>
@@ -205,7 +205,7 @@ function Register() {
                 }}
                 required
               />
-              <span className="tooltip-icon" aria-label="SerpAPI key requirements" tabIndex={0}>?</span>
+              <span className="tooltip-icon" aria-label="SerpAPI key requirements" tabIndex={0}><i>i</i></span>
               <div className="tooltip-content">SerpApi Key should be Valid.</div>
             </div>
           </div>
