@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, memo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './SearchJobGoogle.css';
 
 // Helpers kept module-scoped so they are stable and reusable
@@ -79,6 +80,7 @@ const JobRow = memo(({ job }) => {
 
 const SearchJobGoogle = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
   const [jobTitle, setJobTitle] = useState('');
   const [location, setLocation] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -90,6 +92,13 @@ const SearchJobGoogle = () => {
   const JOBS_PER_PAGE = 10;
 
   const groupRefs = useRef({});
+
+  // Check authentication and redirect if not logged in
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated()) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   const scrollGroupIntoView = (groupId) => {
     try {
@@ -311,6 +320,20 @@ const SearchJobGoogle = () => {
       localStorage.removeItem('searchJobPagination');
     } catch {}
   }, []);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="search-job-container">
+        <div className="loading-container">
+          <div className="loading-spinner">
+            <span className="spinner" />
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="search-job-container">

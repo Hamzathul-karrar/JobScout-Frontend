@@ -41,6 +41,12 @@
   flex-shrink: 0;
 }
 
+.nav-loading {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  padding: 10px 20px;
+}
+
 .nav-btn {
   padding: 10px 20px;
   border-radius: 12px;

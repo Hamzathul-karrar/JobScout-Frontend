@@ -15,6 +15,7 @@ function Register() {
     password: "",
     serpApiKey: "",
   });
+  const [serverError, setServerError] = useState("");
 
   const validateFullName = (value) => {
     const v = value.trim();
@@ -64,14 +65,46 @@ function Register() {
       return;
     }
     setIsSubmitting(true);
+    setServerError("");
     try {
-      // Placeholder: Persist locally so the app can use it later
-      // Keep minimal per requirements; no backend wired here
-      localStorage.setItem("jobscout_user_full_name", fullName);
-      localStorage.setItem("jobscout_user_email", email);
-      localStorage.setItem("jobscout_serpapi_key", serpApiKey);
-      // Do not store password in localStorage in real apps; kept ephemeral here
-      navigate("/search-jobs");
+      const response = await fetch("http://localhost:8082/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: fullName,
+          email: email,
+          password: password,
+          serpapiKey: serpApiKey,
+        }),
+      });
+
+      if (!response.ok) {
+        let message = "Registration failed. Please check your input and try again.";
+        try {
+          const data = await response.json();
+          if (typeof data === "string") message = data;
+          if (data && (data.message || data.error)) message = data.message || data.error;
+        } catch (_) {
+          try {
+            const text = await response.text();
+            if (text) message = text;
+          } catch (_) {}
+        }
+
+        const lower = message.toLowerCase();
+        setErrors((prev) => ({
+          ...prev,
+          email: lower.includes("email") ? message : prev.email,
+          fullName: lower.includes("full name") ? message : prev.fullName,
+          password: lower.includes("password") ? message : prev.password,
+          serpApiKey: lower.includes("serpapi") || lower.includes("serp api") ? message : prev.serpApiKey,
+        }));
+        setServerError(message);
+        return;
+      }
+
+      // Success
+      navigate(-1);
     } finally {
       setIsSubmitting(false);
     }
@@ -85,6 +118,9 @@ function Register() {
 
       <form className="register-form" onSubmit={handleSubmit}>
         <h2 className="register-title">Create your account</h2>
+        {serverError && (
+          <div className="register-error-banner" role="alert" aria-live="polite">{serverError}</div>
+        )}
         <div className="register-inputs">
           <div className="register-group full-row">
             <label htmlFor="fullName">Full Name</label>

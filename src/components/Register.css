@@ -539,3 +539,14 @@
   border-color: #f87171 !important;
   box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.15), 0 8px 32px rgba(248, 113, 113, 0.15);
 }
+
+.register-error-banner {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(248, 113, 113, 0.12);
+  color: #fecaca;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  text-align: left;
+  font-size: 0.95rem;
+}

@@ -1,13 +1,16 @@
 import React from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
 import "./App.css";
 import JobPortals from "./components/JobPortals";
 import SearchJobGoogle from "./components/SearchJobGoogle";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import Logout from "./components/Logout";
 
 function App() {
   const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
 
   const handleExplorePortals = () => {
     navigate("/jobportals");
@@ -35,12 +38,20 @@ function App() {
               <div className="container">
                 <div className="nav-brand">JobScout</div>
                 <div className="nav-buttons">
-                  <button className="nav-btn signin" onClick={handleSignIn}>
-                    Sign In
-                  </button>
-                  <button className="nav-btn signup" onClick={handleSignUp}>
-                    Sign Up
-                  </button>
+                  {isLoading ? (
+                    <div className="nav-loading">Loading...</div>
+                  ) : isAuthenticated() ? (
+                    <Logout />
+                  ) : (
+                    <>
+                      <button className="nav-btn signin" onClick={handleSignIn}>
+                        Sign In
+                      </button>
+                      <button className="nav-btn signup" onClick={handleSignUp}>
+                        Sign Up
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </nav>
