@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "react-hot-toast"; 
 import { apiCall } from "../utils/api";
-import "./Register.css";
+import "./Register/Register.css";
 
 function Login() {
   const navigate = useNavigate();

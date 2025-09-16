@@ -1,11 +1,11 @@
 import React from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { Toaster } from "react-hot-toast"; // Added import for Toaster
+import { Toaster } from "react-hot-toast"; 
 import { useAuth } from "./contexts/AuthContext";
 import "./App.css";
 import JobPortals from "./components/JobPortals";
 import SearchJobGoogle from "./components/SearchJobGoogle";
-import Register from "./components/Register";
+import Register from "./components/Register/Register";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
 
