@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiCall } from "../utils/api";
+import { toast } from "react-hot-toast"; 
 import "./Register.css";
 
 function Register() {
@@ -57,6 +59,41 @@ function Register() {
     return nextErrors;
   };
 
+  // CHANGE: Added function to filter out internal/technical error messages
+  const sanitizeErrorMessage = (message) => {
+    if (!message || typeof message !== 'string') {
+      return "Registration failed. Please try again.";
+    }
+
+    // Check for patterns that indicate internal/technical errors
+    const internalErrorPatterns = [
+      /com\.hamza\.JobScout/i,           // Package names
+      /java\./i,                        // Java package references
+      /org\.springframework/i,          // Spring framework errors
+      /org\.hibernate/i,                // Hibernate errors
+      /SQLException/i,                  // Database errors
+      /NullPointerException/i,          // Java exceptions
+      /RuntimeException/i,              // Runtime exceptions
+      /IllegalArgumentException/i,      // Specific exceptions (when exposed)
+      /at\s+[a-zA-Z0-9_.]+\(/i,        // Stack trace lines
+      /Caused by:/i,                    // Exception cause chains
+      /\.java:\d+/i,                    // File references with line numbers
+      /\$\$EnhancerBySpringCGLIB/i,     // Spring proxy classes
+      /HikariPool/i,                    // Connection pool errors
+      /JdbcTemplate/i,                  // JDBC errors
+    ];
+
+    // Check if the message contains any internal error patterns
+    const hasInternalError = internalErrorPatterns.some(pattern => pattern.test(message));
+    
+    if (hasInternalError) {
+      return "Registration failed. Please check your information and try again.";
+    }
+
+    // Return the original message if it's safe to display
+    return message;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validation = validate();
@@ -66,8 +103,9 @@ function Register() {
     }
     setIsSubmitting(true);
     setServerError("");
+    
     try {
-      const response = await fetch("http://localhost:8082/auth/register", {
+      const response = await apiCall('/auth/register', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -78,33 +116,43 @@ function Register() {
         }),
       });
 
+      // CHANGE: Modified error handling to properly extract and sanitize backend error messages
       if (!response.ok) {
-        let message = "Registration failed. Please check your input and try again.";
+        let errorMessage = "Registration failed. Please try again.";
+        
         try {
-          const data = await response.json();
-          if (typeof data === "string") message = data;
-          if (data && (data.message || data.error)) message = data.message || data.error;
-        } catch (_) {
-          try {
-            const text = await response.text();
-            if (text) message = text;
-          } catch (_) {}
+          // Try to parse the response body to get the actual error message
+          const errorData = await response.json();
+          
+          // Extract message from ApiResponse structure
+          if (errorData && errorData.message) {
+            errorMessage = sanitizeErrorMessage(errorData.message);
+          }
+        } catch (parseError) {
+          // If JSON parsing fails, use default message
+          console.warn("Failed to parse error response:", parseError);
         }
-
-        const lower = message.toLowerCase();
-        setErrors((prev) => ({
-          ...prev,
-          email: lower.includes("email") ? message : prev.email,
-          fullName: lower.includes("full name") ? message : prev.fullName,
-          password: lower.includes("password") ? message : prev.password,
-          serpApiKey: lower.includes("serpapi") || lower.includes("serp api") ? message : prev.serpApiKey,
-        }));
-        setServerError(message);
+        
+        setServerError(errorMessage);
         return;
       }
 
       // Success
-      navigate(-1);
+      toast.success(`Registration successful! Welcome ${fullName}!`); 
+      navigate("/login");
+
+    } catch (error) {
+      // CHANGE: Enhanced network error handling with sanitization
+      console.error("Network or unexpected error:", error);
+      
+      // Check if the error has a message that might contain internal details
+      let errorMessage = "Registration failed. Please check your connection and try again.";
+      
+      if (error.message) {
+        errorMessage = sanitizeErrorMessage(error.message);
+      }
+      
+      setServerError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -237,5 +285,3 @@ function Register() {
 }
 
 export default Register;
-
-

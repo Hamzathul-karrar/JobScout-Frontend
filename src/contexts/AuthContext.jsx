@@ -105,7 +105,9 @@ export const AuthProvider = ({ children }) => {
           },
           body: JSON.stringify({
             refreshToken: user.refreshToken
-          })
+          }),
+          // keep logout snappy even if server is slow
+          timeoutMs: 1500
         });
       }
     } catch (error) {

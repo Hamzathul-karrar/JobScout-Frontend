@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { toast } from "react-hot-toast"; 
+import { apiCall } from "../utils/api";
 import "./Register.css";
 
 function Login() {
@@ -49,31 +51,16 @@ function Login() {
     setServerError("");
     
     try {
-      const response = await fetch("http://localhost:8082/auth/login", {
+      const response = await apiCall('/auth/login', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email, password: password }),
       });
 
       if (!response.ok) {
-        let message = "Login failed. Please try again.";
-        try {
-          const data = await response.json();
-          if (typeof data === "string") message = data;
-          if (data && (data.message || data.error)) message = data.message || data.error;
-        } catch (_) {
-          try {
-            const text = await response.text();
-            if (text) message = text;
-          } catch (_) {}
-        }
-
-        const lower = message.toLowerCase();
-        const invalidCombo = lower.includes("invalid email or password");
-        setErrors((prev) => ({
-          email: invalidCombo || lower.includes("email") ? message : prev.email,
-          password: invalidCombo || lower.includes("password") ? message : prev.password,
-        }));
+        const message = response.status === 401
+          ? "Invalid email or password."
+          : "Unable to sign in right now. Please try again.";
         setServerError(message);
         return;
       }
@@ -82,6 +69,8 @@ function Login() {
       const userData = await response.json();
       login(userData);
       
+      toast.success("Login successful!"); 
+
       // Small delay to ensure state updates before navigation
       setTimeout(() => {
         navigate("/"); // Navigate to home page instead of going back
