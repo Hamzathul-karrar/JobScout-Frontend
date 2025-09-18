@@ -6,8 +6,8 @@ import "./App.css";
 import JobPortals from "./components/JobPortals";
 import SearchJobGoogle from "./components/SearchJobGoogle";
 import Register from "./components/Register/Register";
-import Login from "./components/Login";
-import Logout from "./components/Logout";
+import Login from "./components/Login/Login";
+import Logout from "./components/Logout/Logout";
 
 function App() {
   const navigate = useNavigate();
@@ -168,19 +168,19 @@ function App() {
       <Toaster 
         position="top-right"
         toastOptions={{
-          duration: 7000,
+          duration: 4000,
           style: {
             background: '#363636',
             color: '#fff',
           },
           success: {
-            duration: 7000,
+            duration: 4000,
             style: {
               background: '#4caf50',
             },
           },
           error: {
-            duration: 7000,
+            duration: 4000,
             style: {
               background: '#f44336',
             },
