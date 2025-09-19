@@ -1,0 +1,478 @@
+/* Optimized Job Portals Component Styles */
+:root {
+  --primary-gradient: linear-gradient(135deg, #7877c6 0%, #ff6384 100%);
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --text-primary: #f7fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #cbd5e0;
+  --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.2);
+  --border-radius: 20px;
+  --border-radius-small: 16px;
+  --transition: all 0.3s ease;
+}
+
+.job-portals {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  padding: 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+}
+
+/* Simplified background pattern - no fixed positioning or complex gradients */
+.job-portals::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 99, 132, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header Styles - Removed backdrop-filter */
+.portals-header {
+  background: #1a1a2e; /* Solid opaque color from your gradient */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 20px 0;
+  position: sticky;
+  top: 20px;
+  z-index: 100;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow-light);
+}
+
+
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.jobscout-title {
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navigation {
+  display: flex;
+  gap: 16px;
+}
+
+/* Simplified nav buttons */
+.nav-btn {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  padding: 12px 24px;
+  border-radius: var(--border-radius-small);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  color: white;
+  box-shadow: 0 6px 20px rgba(120, 119, 198, 0.2);
+}
+
+.nav-btn.active {
+  background: var(--primary-gradient);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 6px 20px rgba(120, 119, 198, 0.3);
+}
+
+.back-btn {
+  border-color: transparent !important;
+  color: white !important;
+}
+
+/* Container Styles */
+.portals-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Section Styles */
+.section-title {
+  color: var(--text-primary);
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  justify-content: center;
+}
+
+.heart-icon {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #ff6384, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.portal-count {
+  font-size: 1.8rem;
+  font-weight: 600;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-left: 8px;
+}
+
+.favorite-portals {
+  margin-bottom: 60px;
+}
+
+.no-favorites {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 48px 32px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-light);
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+/* Simplified Portal Grid */
+.portals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+/* Simplified Portal Cards - Removed backdrop-filter and complex pseudo-elements */
+.portal-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius);
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition);
+  cursor: pointer;
+  position: relative;
+  min-height: 80px;
+  box-shadow: var(--shadow-light);
+}
+
+.portal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-medium);
+  border-color: rgba(120, 119, 198, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.portal-card.favorite {
+  border-color: rgba(255, 99, 132, 0.3);
+  background: rgba(255, 99, 132, 0.05);
+}
+
+.portal-card.favorite:hover {
+  border-color: rgba(255, 99, 132, 0.5);
+  background: rgba(255, 99, 132, 0.08);
+  box-shadow: 0 12px 40px rgba(255, 99, 132, 0.1);
+}
+
+.portal-info {
+  flex: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.portal-card:hover .portal-info {
+  transform: translateX(4px);
+}
+
+.portal-name {
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.portal-card:hover .portal-name {
+  color: #a78bfa;
+}
+
+.portal-card.favorite:hover .portal-name {
+  color: #fca5a5;
+}
+
+/* Simplified Heart Button */
+.heart-btn {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 50%;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.heart-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 99, 132, 0.15);
+  border-color: rgba(255, 99, 132, 0.3);
+  color: #ff6384;
+  box-shadow: 0 6px 20px rgba(255, 99, 132, 0.2);
+}
+
+.heart-btn.favorite {
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 6px 20px rgba(255, 99, 132, 0.3);
+}
+
+.heart-btn.favorite:hover {
+  transform: scale(1.15);
+  box-shadow: 0 8px 25px rgba(255, 99, 132, 0.4);
+}
+
+/* Simplified Card Animation */
+.portal-card {
+  animation: fadeInUp 0.4s ease-out forwards;
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+.portal-card:nth-child(1) { animation-delay: 0.05s; }
+.portal-card:nth-child(2) { animation-delay: 0.1s; }
+.portal-card:nth-child(3) { animation-delay: 0.15s; }
+.portal-card:nth-child(4) { animation-delay: 0.2s; }
+.portal-card:nth-child(5) { animation-delay: 0.25s; }
+.portal-card:nth-child(6) { animation-delay: 0.3s; }
+.portal-card:nth-child(n+7) { animation-delay: 0.35s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Simplified Scrollbar */
+.job-portals::-webkit-scrollbar {
+  width: 8px;
+}
+
+.job-portals::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.job-portals::-webkit-scrollbar-thumb {
+  background: var(--primary-gradient);
+  border-radius: 4px;
+}
+
+.job-portals::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #8a89d4, #ff7a9a);
+}
+
+/* Enhanced focus states for accessibility */
+.nav-btn:focus,
+.heart-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(120, 119, 198, 0.15);
+}
+
+.portal-card:focus-within {
+  outline: none;
+  border-color: rgba(120, 119, 198, 0.5);
+  box-shadow: 0 0 0 3px rgba(120, 119, 198, 0.15), var(--shadow-medium);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .job-portals {
+    padding: 15px;
+  }
+
+  .portals-header {
+    border-radius: var(--border-radius);
+    margin-bottom: 30px;
+    top: 15px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 0 1.5rem;
+  }
+
+  .navigation {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .portals-container {
+    padding: 0 15px;
+  }
+
+  .portals-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    margin-bottom: 24px;
+  }
+
+  .jobscout-title {
+    font-size: 1.6rem;
+  }
+
+  .portal-card {
+    padding: 20px;
+    border-radius: var(--border-radius-small);
+  }
+
+  .nav-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border-radius: 12px;
+    min-height: 44px;
+    letter-spacing: 0.3px;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-portals {
+    padding: 10px;
+  }
+
+  .portals-header {
+    top: 10px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius-small);
+  }
+
+  .header-content {
+    padding: 0 1rem;
+  }
+
+  .nav-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    min-height: 44px;
+    min-width: 44px;
+    letter-spacing: 0.2px;
+    text-transform: none;
+  }
+
+  .portal-card {
+    padding: 16px;
+    border-radius: 14px;
+    min-height: 70px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .portal-name {
+    font-size: 1.1rem;
+  }
+
+  .heart-btn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.2rem;
+    padding: 10px;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .jobscout-title {
+    font-size: 1.4rem;
+  }
+
+  .navigation {
+    gap: 8px;
+  }
+
+  .portals-container {
+    padding: 0 12px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .portal-card,
+  .heart-icon,
+  .heart-btn,
+  .nav-btn {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .portal-card:hover,
+  .heart-btn:hover,
+  .nav-btn:hover {
+    transform: none !important;
+  }
+}

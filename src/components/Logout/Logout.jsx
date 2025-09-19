@@ -26,11 +26,9 @@ const LogoutIcon = (
 
 // App-specific localStorage keys to clean up
 const APP_STORAGE_KEYS = [
-  'savedJobs',
-  'favoritedJobPortals',
-  'userPreferences',
-  'jobSearchHistory',
-  'applicationHistory',
+  'accessToken',
+  'refreshToken',
+  'user'
   // Add other app-specific keys as needed
 ];
 
@@ -58,7 +56,7 @@ function Logout() {
   // Memoized event handler to prevent unnecessary function recreation
   const handleLogout = useCallback(async () => {
     const confirmed = window.confirm(
-      'Logging out will delete your saved jobs and favorited job portals from this device.\n\nDo you want to continue?'
+      'Do you want to Logout?'
     );
     if (!confirmed) return;
 

@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast"; 
 import { useAuth } from "./contexts/AuthContext";
 import "./App.css";
-import JobPortals from "./components/JobPortals";
+import JobPortals from "./components/JobPortals/JobPortals";
 import SearchJobGoogle from "./components/SearchJobGoogle";
 import Register from "./components/Register/Register";
 import Login from "./components/Login/Login";
