@@ -155,3 +155,5 @@ export const JOB_PORTALS = [
     FAVORITE_PORTALS: "jobScoutFavoritePortals",
   };
   
+
+  export const JOBS_PER_PAGE = 10;

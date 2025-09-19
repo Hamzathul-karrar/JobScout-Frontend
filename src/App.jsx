@@ -1,10 +1,10 @@
 import React from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast"; 
 import { useAuth } from "./contexts/AuthContext";
 import "./App.css";
 import JobPortals from "./components/JobPortals/JobPortals";
-import SearchJobGoogle from "./components/SearchJobGoogle";
+import SearchJobGoogle from "./components/SearchJobGoogle/SearchJobGoogle";
 import Register from "./components/Register/Register";
 import Login from "./components/Login/Login";
 import Logout from "./components/Logout/Logout";
@@ -12,6 +12,11 @@ import Logout from "./components/Logout/Logout";
 function App() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
+
+  const GuestOnlyRoute = ({ children }) => {
+    if (isLoading) return null;
+    return isAuthenticated() ? <Navigate to="/" replace /> : children;
+  };
 
   const handleExplorePortals = () => {
     navigate("/jobportals");
@@ -160,8 +165,23 @@ function App() {
 
         <Route path="/jobportals" element={<JobPortals />} />
         <Route path="/search-jobs" element={<SearchJobGoogle />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/register"
+          element={
+            <GuestOnlyRoute>
+              <Register />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <GuestOnlyRoute>
+              <Login />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       
       {/* Added Toaster component at the root level */}
