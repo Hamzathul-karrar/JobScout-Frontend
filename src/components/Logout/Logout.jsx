@@ -1,27 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
-import './Logout.css';
 
-// Extracted SVG icon to prevent re-creation on every render
-const LogoutIcon = (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-    focusable="false"
-  >
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" y1="12" x2="9" y2="12" />
-  </svg>
+// Loading spinner component
+const LoadingSpinner = () => (
+  <span className="loading-spinner">
+    <span className="spinner" />
+  </span>
 );
 
 // App-specific localStorage keys to clean up
@@ -32,7 +17,12 @@ const APP_STORAGE_KEYS = [
   // Add other app-specific keys as needed
 ];
 
-function Logout() {
+function Logout({ 
+  className = 'logout-button', 
+  onLogoutSuccess,
+  showConfirmation = true,
+  confirmationMessage = 'Do you want to Logout?'
+}) {
   const { user, logout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -55,10 +45,10 @@ function Logout() {
 
   // Memoized event handler to prevent unnecessary function recreation
   const handleLogout = useCallback(async () => {
-    const confirmed = window.confirm(
-      'Do you want to Logout?'
-    );
-    if (!confirmed) return;
+    if (showConfirmation) {
+      const confirmed = window.confirm(confirmationMessage);
+      if (!confirmed) return;
+    }
 
     setIsLoggingOut(true);
 
@@ -71,35 +61,37 @@ function Logout() {
 
       toast.success('Successfully logged out!');
 
+      // Call success callback if provided
+      if (onLogoutSuccess) {
+        onLogoutSuccess();
+      }
+
     } catch (error) {
       console.error('Logout failed:', error);
-      
+      toast.error('Logout failed. Please try again.');
     } finally {
       setIsLoggingOut(false);
     }
-  }, [logout]);
+  }, [logout, onLogoutSuccess, showConfirmation, confirmationMessage]);
 
   if (!user) {
     return null; // Don't render if user is not logged in
   }
 
   return (
-      <button 
-        className="logout-button" 
-        onClick={handleLogout}
-        disabled={isLoggingOut}
-        aria-label="Logout"
-        title="Logout"
-      >
-        {isLoggingOut ? (
-          <span className="loading-spinner">
-            <span className="spinner" />
-          </span>
-        ) : (
-          LogoutIcon
-        )}
-      </button>
-           
+    <button 
+      className={className} 
+      onClick={handleLogout}
+      disabled={isLoggingOut}
+      aria-label="Logout"
+      title="Logout"
+    >
+      {isLoggingOut ? (
+        <LoadingSpinner />
+      ) : (
+        'Logout' 
+      )}
+    </button>
   );
 }
 

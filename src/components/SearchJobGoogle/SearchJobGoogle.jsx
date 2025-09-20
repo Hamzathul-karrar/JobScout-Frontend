@@ -7,6 +7,7 @@ import SearchForm from './SearchForm';
 import JobsTable from './JobsTable';
 import PaginationControls from './PaginationControls';
 import ResultsHeader from './ResultsHeader';
+import Navigation from '../Navigation/Navigation';
 import { JOBS_PER_PAGE } from '../../utils/constants';
 import './SearchJobGoogle.css';
 
@@ -125,12 +126,8 @@ const SearchJobGoogleContent = memo(() => {
 
   return (
     <div className="search-job-container">
-      <div className="back-button-container">
-        <button onClick={onBackClick} className="back-button">
-          ← Back to Home
-        </button>
-      </div>
       
+      <Navigation />
       <SearchForm />
       
       {error && <ErrorMessage error={error} />}

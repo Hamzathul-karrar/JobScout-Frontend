@@ -90,7 +90,7 @@
   z-index: -1;
 }
 .search-form-searched {
-  margin-top: 20px;
+  margin-top: 80px;
   transform: scale(0.96);
   background: rgba(255, 255, 255, 0.08);
 }
@@ -585,7 +585,7 @@
     padding: 10px;
   }
   .search-form {
-    margin: 28px auto 12px;
+    margin: 50px auto 12px;
     padding: 22px 16px;
     border-radius: 16px;
   }
