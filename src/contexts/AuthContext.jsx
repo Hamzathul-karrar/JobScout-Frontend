@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { apiCall } from '../utils/api';
 
 const AuthContext = createContext();
@@ -15,88 +15,86 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Tolerance for small clock skews in ms
   const CLOCK_SKEW_TOLERANCE_MS = 30000;
 
-  const isJwtExpired = (token) => {
+  // Cache for decoded JWT payloads
+  const jwtCache = useMemo(() => new Map(), []);
+
+  // Memoized JWT expiration check
+  const isJwtExpired = useCallback((token) => {
     try {
       if (!token) return true;
+
+      // Check cache first
+      if (jwtCache.has(token)) {
+        const payload = jwtCache.get(token);
+        const exp = typeof payload?.exp === 'number' ? payload.exp * 1000 : 0;
+        const now = Date.now();
+        return exp <= now + CLOCK_SKEW_TOLERANCE_MS;
+      }
+
       const parts = token.split('.');
       if (parts.length !== 3) return true;
+
       const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+      // Cache the payload with size limit
+      if (jwtCache.size > 10) {
+        const firstKey = jwtCache.keys().next().value;
+        jwtCache.delete(firstKey);
+      }
+      jwtCache.set(token, payload);
+
       const exp = typeof payload?.exp === 'number' ? payload.exp * 1000 : 0;
       const now = Date.now();
       return exp <= now + CLOCK_SKEW_TOLERANCE_MS;
     } catch {
       return true;
     }
-  };
+  }, [jwtCache]);
 
-  const attemptTokenRefresh = async (currentUser) => {
+  const attemptTokenRefresh = useCallback(async (currentUser) => {
     const u = currentUser ?? user;
     if (!u?.refreshToken) throw new Error('Authentication failed');
+
     const refreshResponse = await apiCall('/auth/refresh', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken: u.refreshToken })
     });
+
     if (!refreshResponse.ok) throw new Error('Token refresh failed');
+
     const refreshData = await refreshResponse.json();
     const updatedUser = { ...u, accessToken: refreshData.accessToken, refreshToken: refreshData.refreshToken };
+
     setUser(updatedUser);
-    localStorage.setItem('accessToken', refreshData.accessToken);
-    localStorage.setItem('refreshToken', refreshData.refreshToken);
+
+    // Batch updates for performance
+    requestAnimationFrame(() => {
+      localStorage.setItem('accessToken', refreshData.accessToken);
+      localStorage.setItem('refreshToken', refreshData.refreshToken);
+    });
+
     return updatedUser;
-  };
+  }, [user]);
 
-  // Load user data from localStorage on app start
-  useEffect(() => {
-    const loadUser = () => {
-      try {
-        const storedUser = localStorage.getItem('user');
-        const storedToken = localStorage.getItem('accessToken');
-        const storedRefreshToken = localStorage.getItem('refreshToken');
-
-        if (storedUser && storedToken) {
-          setUser({
-            ...JSON.parse(storedUser),
-            accessToken: storedToken,
-            refreshToken: storedRefreshToken
-          });
-        }
-      } catch (error) {
-        console.error('Error loading user data:', error);
-        // Clear corrupted data
-        localStorage.removeItem('user');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadUser();
-  }, []);
-
-  const login = (userData) => {
+  const login = useCallback((userData) => {
     const { accessToken, refreshToken, ...userInfo } = userData;
-    
-    // Store in state
+
     setUser({
       ...userInfo,
       accessToken,
       refreshToken
     });
 
-    // Store in localStorage
     localStorage.setItem('user', JSON.stringify(userInfo));
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
-      // Call logout API if user is logged in
       if (user?.refreshToken) {
         await apiCall('/auth/logout', {
           method: 'POST',
@@ -106,28 +104,24 @@ export const AuthProvider = ({ children }) => {
           body: JSON.stringify({
             refreshToken: user.refreshToken
           }),
-          // keep logout snappy even if server is slow
           timeoutMs: 1500
         });
       }
     } catch (error) {
       console.error('Logout API error:', error);
-      // Continue with logout even if API call fails
     } finally {
-      // Clear state and localStorage
       setUser(null);
       localStorage.removeItem('user');
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
     }
-  };
+  }, [user?.refreshToken]);
 
-  const makeAuthenticatedRequest = async (endpoint, options = {}) => {
+  const makeAuthenticatedRequest = useCallback(async (endpoint, options = {}) => {
     if (!user?.accessToken) {
       throw new Error('Not authenticated');
     }
 
-    // Proactively refresh if token expired
     let workingUser = user;
     if (isJwtExpired(workingUser.accessToken)) {
       try {
@@ -138,23 +132,24 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
+    // Reuse headers object for efficiency
+    const headers = {
+      'Authorization': `Bearer ${workingUser.accessToken}`,
+      'Content-Type': 'application/json',
+      ...options.headers
+    };
+
     const requestOptions = {
       ...options,
-      headers: {
-        'Authorization': `Bearer ${workingUser.accessToken}`,
-        'Content-Type': 'application/json',
-        ...options.headers
-      }
+      headers
     };
 
     let response = await apiCall(endpoint, requestOptions);
 
-    // If token expired, try to refresh
     if (response.status === 401) {
       try {
         const updatedUser = await attemptTokenRefresh(workingUser);
-        // Retry original request with new token
-        requestOptions.headers.Authorization = `Bearer ${updatedUser.accessToken}`;
+        headers.Authorization = `Bearer ${updatedUser.accessToken}`;
         response = await apiCall(endpoint, requestOptions);
       } catch (refreshError) {
         await logout();
@@ -162,14 +157,14 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-    // Some backends send non-401 with a body mentioning JWT expiry. Detect and retry once.
+    // Detect JWT expiry by body, too
     if (!response.ok && response.status !== 401) {
       try {
         const cloned = response.clone();
         const bodyText = await cloned.text();
         if (/jwt\s*expired|token\s*expired/i.test(bodyText)) {
           const updatedUser = await attemptTokenRefresh(workingUser);
-          requestOptions.headers.Authorization = `Bearer ${updatedUser.accessToken}`;
+          headers.Authorization = `Bearer ${updatedUser.accessToken}`;
           response = await apiCall(endpoint, requestOptions);
         }
       } catch {
@@ -178,19 +173,56 @@ export const AuthProvider = ({ children }) => {
     }
 
     return response;
-  };
+  }, [user, isJwtExpired, attemptTokenRefresh, logout]);
 
-  // Fixed: Return boolean directly, not a function
+  // Load user from localStorage on app start
+  useEffect(() => {
+    const loadUser = () => {
+      try {
+        const [storedUser, storedToken, storedRefreshToken] = [
+          localStorage.getItem('user'),
+          localStorage.getItem('accessToken'),
+          localStorage.getItem('refreshToken')
+        ];
+
+        if (storedUser && storedToken) {
+          setUser({
+            ...JSON.parse(storedUser),
+            accessToken: storedToken,
+            refreshToken: storedRefreshToken
+          });
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        ['user', 'accessToken', 'refreshToken'].forEach(key =>
+          localStorage.removeItem(key)
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
+
   const isAuthenticated = user !== null;
 
-  const value = {
+  // Memoize the context value
+  const value = useMemo(() => ({
     user,
     login,
     logout,
-    isAuthenticated, // This is now a boolean, not a function
+    isAuthenticated,
     isLoading,
     makeAuthenticatedRequest
-  };
+  }), [
+    user,
+    login,
+    logout,
+    isAuthenticated,
+    isLoading,
+    makeAuthenticatedRequest
+  ]);
 
   return (
     <AuthContext.Provider value={value}>
