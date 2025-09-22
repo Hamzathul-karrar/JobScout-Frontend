@@ -1,3 +1,4 @@
+// useJobSearch.js - Fixed version
 import { useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,18 +8,18 @@ import { normalizeJobs } from '../utils/jobUtils';
 export const useJobSearch = () => {
   const navigate = useNavigate();
   const { makeAuthenticatedRequest } = useAuth();
-  const { 
-    jobTitle, 
-    location, 
-    setIsSearching, 
-    setError, 
-    setHasSearched, 
-    groups, 
-    setGroups, 
-    paginationMap, 
-    setPaginationMap 
+  const {
+    jobTitle,
+    location,
+    setIsSearching,
+    setError,
+    setHasSearched,
+    groups,
+    setGroups,
+    paginationMap,
+    setPaginationMap
   } = useSearchJobContext();
-  
+
   const debounceTimeout = useRef(null);
 
   const handleSearch = useCallback(async (persistPagination) => {
@@ -37,6 +38,8 @@ export const useJobSearch = () => {
       const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       const endpoint = `/searchJob?jobTitle=${encodeURIComponent(jobTitle.trim())}&location=${encodeURIComponent(location.trim())}`;
+      
+      
       const response = await makeAuthenticatedRequest(endpoint, {
         method: 'GET',
         signal: controller.signal
@@ -60,11 +63,32 @@ export const useJobSearch = () => {
       }
 
       const data = await response.json();
-      const jobsArray = data?.jobs || data || [];
+    
+
+      // Fixed: Handle the response properly - backend returns direct array
+      let jobsArray = [];
+      
+      if (Array.isArray(data)) {
+        // Backend returns direct array of JobResult objects
+        jobsArray = data;
+      } else if (data && data.jobs && Array.isArray(data.jobs)) {
+        // Fallback: if wrapped in object with jobs property
+        jobsArray = data.jobs;
+      } else if (data && data.data && Array.isArray(data.data)) {
+        // Fallback: if wrapped in object with data property
+        jobsArray = data.data;
+      } else {
+        console.warn('Unexpected response format:', data);
+        jobsArray = [];
+      }
+
+      
+
+
       const normalizedTitle = jobTitle.trim();
       const normalizedLocation = location.trim();
       const sortedJobs = normalizeJobs(jobsArray);
-      
+
       const newGroup = {
         id: Date.now(),
         jobTitle: normalizedTitle,
@@ -72,7 +96,7 @@ export const useJobSearch = () => {
         createdAt: new Date().toISOString(),
         jobs: sortedJobs,
       };
-      
+
       const updatedGroups = [
         newGroup,
         ...groups.filter(g =>
@@ -80,18 +104,18 @@ export const useJobSearch = () => {
           (g?.location || '').trim().toLowerCase() !== normalizedLocation.toLowerCase()
         ),
       ];
-      
+
       const nextPagination = { ...paginationMap, [newGroup.id]: 1 };
-      
+
       // Batch state updates
       setGroups(updatedGroups);
       setPaginationMap(nextPagination);
-      
+
       // Debounce localStorage writes
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
       }
-      
+
       debounceTimeout.current = setTimeout(() => {
         try {
           localStorage.setItem('searchJobGroups', JSON.stringify(updatedGroups));
@@ -100,10 +124,9 @@ export const useJobSearch = () => {
         }
         persistPagination(nextPagination);
       }, 100);
-      
+
     } catch (err) {
       console.error('Search error:', err);
-      
       if (err.name === 'AbortError') {
         setError('Request timed out. The server is taking too long to respond. Please try again.');
       } else if (err.name === 'TypeError' && err.message.includes('fetch')) {
