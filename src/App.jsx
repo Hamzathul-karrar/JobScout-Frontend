@@ -23,10 +23,11 @@ const createLazyWithPreload = (importFunc) => {
 };
 
 // Non-critical components - Load on demand/background
-const JobPortals = createLazyWithPreload(() => 
+const JobPortals = createLazyWithPreload(() =>
   import("./components/JobPortals/JobPortals")
 );
-const SearchJobGoogle = createLazyWithPreload(() => 
+
+const SearchJobGoogle = createLazyWithPreload(() =>
   import("./components/SearchJobGoogle/SearchJobGoogle")
 );
 
@@ -43,6 +44,13 @@ function App() {
     return () => clearTimeout(preloadTimer);
   }, []);
 
+  // Protected Route Component
+  const ProtectedRoute = ({ children }) => {
+    if (isLoading) return <HomeSkeleton />;
+    return isAuthenticated ? children : <Navigate to="/login" replace />;
+  };
+
+  // Guest Only Route Component
   const GuestOnlyRoute = ({ children }) => {
     if (isLoading) return <HomeSkeleton />;
     return isAuthenticated ? <Navigate to="/" replace /> : children;
@@ -61,43 +69,20 @@ function App() {
 
   return (
     <>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: "#363636",
-            color: "#fff",
-          },
-        }}
-      />
       <Routes>
-        <Route
-          path="/"
-          element={<Home preloadHandlers={preloadHandlers} />}
+        {/* Public routes */}
+        <Route 
+          path="/" 
+          element={<Home preloadHandlers={preloadHandlers} />} 
         />
+
+        {/* Guest only routes */}
         <Route
-          path="/jobportals"
+          path="/login"
           element={
-            isAuthenticated ? (
-              <Suspense fallback={<JobPortalsSkeleton />}>
-                <JobPortals />
-              </Suspense>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/search-jobs"
-          element={
-            isAuthenticated ? (
-              <Suspense fallback={<JobSearchSkeleton />}>
-                <SearchJobGoogle />
-              </Suspense>
-            ) : (
-              <Navigate to="/login" replace />
-            )
+            <GuestOnlyRoute>
+              <Login />
+            </GuestOnlyRoute>
           }
         />
         <Route
@@ -108,15 +93,30 @@ function App() {
             </GuestOnlyRoute>
           }
         />
+
+        {/* Public routes that work for both authenticated and unauthenticated users */}
         <Route
-          path="/login"
+          path="/search-jobs"
           element={
-            <GuestOnlyRoute>
-              <Login />
-            </GuestOnlyRoute>
+            <Suspense fallback={<JobSearchSkeleton />}>
+              <SearchJobGoogle />
+            </Suspense>
           }
         />
+        <Route
+          path="/jobportals"
+          element={
+            <Suspense fallback={<JobPortalsSkeleton />}>
+              <JobPortals />
+            </Suspense>
+          }
+        />
+
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      <Toaster />
     </>
   );
 }

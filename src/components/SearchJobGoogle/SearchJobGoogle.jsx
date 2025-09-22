@@ -93,7 +93,7 @@ const SearchJobGoogleContent = memo(() => {
   }, [navigate]);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated()) {
+    if (!isLoading && !isAuthenticated) {
       navigate('/login');
     }
   }, [isAuthenticated, isLoading, navigate]);

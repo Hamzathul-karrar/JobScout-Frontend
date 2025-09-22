@@ -180,15 +180,14 @@ export const AuthProvider = ({ children }) => {
     return response;
   };
 
-  const isAuthenticated = () => {
-    return user !== null;
-  };
+  // Fixed: Return boolean directly, not a function
+  const isAuthenticated = user !== null;
 
   const value = {
     user,
     login,
     logout,
-    isAuthenticated,
+    isAuthenticated, // This is now a boolean, not a function
     isLoading,
     makeAuthenticatedRequest
   };
