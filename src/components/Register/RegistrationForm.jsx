@@ -15,13 +15,13 @@ const RegistrationForm = ({
   return (
     <form className="register-form" onSubmit={handleSubmit}>
       <h2 className="register-title">Create your account</h2>
-      
+
       {serverError && (
         <div className="register-error-banner" role="alert" aria-live="polite">
           {serverError}
         </div>
       )}
-      
+
       <div className="register-inputs">
         <FormInput
           id="fullName"
@@ -90,11 +90,21 @@ const RegistrationForm = ({
             Sign in
           </button>
         </p>
+        <p>
+          Get a free SerpAPI key{" "}
+          <a
+            href="https://serpapi.com/users/sign_up?plan=free"
+            className="auth-link"
+            target="_blank"
+          >
+            from SerpAPI
+          </a>
+        </p>
       </div>
 
-      <button 
-        className="register-button" 
-        type="submit" 
+      <button
+        className="register-button"
+        type="submit"
         disabled={isSubmitting || !canSubmit()}
       >
         {isSubmitting ? (
