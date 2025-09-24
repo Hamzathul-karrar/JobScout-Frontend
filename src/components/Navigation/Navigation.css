@@ -580,3 +580,245 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+
+/* Profile Dropdown Styles */
+.profile-dropdown-wrapper {
+  position: relative;
+}
+
+.profile-icon-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 44px;
+}
+
+.profile-icon-container:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7877c6 0%, #ff6384 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.profile-dropdown-arrow {
+  color: #e2e8f0;
+  transition: transform 0.3s ease;
+}
+
+.profile-icon-container:hover .profile-dropdown-arrow {
+  color: white;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: rgba(15, 15, 35, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  z-index: 1002;
+  animation: profileDropdownSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+@keyframes profileDropdownSlide {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.profile-dropdown-content {
+  padding: 20px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.profile-avatar-large {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7877c6 0%, #ff6384 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.profile-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-email {
+  font-size: 0.85rem;
+  color: #a0a0a0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 16px 0;
+}
+
+.profile-stats {
+  margin-bottom: 16px;
+}
+
+.profile-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.profile-stat-label {
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.profile-stat-value {
+  font-size: 0.9rem;
+  color: #7877c6;
+  font-weight: 600;
+}
+
+.profile-actions {
+  display: flex;
+}
+
+.profile-logout-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.profile-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #ffe4e6;
+  transform: translateY(-2px);
+}
+
+/* Mobile Profile Styles */
+.mobile-header-actions {
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-profile-wrapper {
+  position: relative;
+}
+
+.mobile-profile-wrapper .profile-icon-container {
+  padding: 6px 8px;
+  min-height: 40px;
+}
+
+.mobile-profile-wrapper .profile-avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 0.7rem;
+}
+
+.mobile-profile-wrapper .profile-dropdown {
+  right: -8px;
+  width: 260px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .mobile-header-actions {
+    display: flex;
+  }
+  
+  .nav-desktop {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-profile-wrapper .profile-dropdown {
+    right: -12px;
+    width: calc(100vw - 24px);
+    max-width: 280px;
+  }
+}
+
+/* Animation for dropdown arrow rotation */
+.profile-dropdown-wrapper:hover .profile-dropdown-arrow,
+.mobile-profile-wrapper:hover .profile-dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* Focus states for accessibility */
+.profile-icon-container:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(120, 119, 198, 0.3);
+}
+
+.profile-logout-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+}
