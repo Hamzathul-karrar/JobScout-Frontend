@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Navigation from "../Navigation/Navigation";
-import Logout from "../Logout/Logout";
+import BuyMeCoffee from '../BuyMeCoffee/BuyMeCoffee';
 import "./Home.css";
 
 function Home({ preloadHandlers = {} }) {
@@ -33,19 +33,17 @@ function Home({ preloadHandlers = {} }) {
       <header className="hero">
         <div className="hero-bg" aria-hidden="true"></div>
         <div className="container hero-inner">
-          <div className="badge">
-            ⚡ Your Ultimate Job Search Companion
-          </div>
+          <div className="badge">⚡ Your Ultimate Job Search Companion</div>
           <h1 className="title">JobScout</h1>
           <p className="subtitle">
-            Discover your next career opportunity with JobScout — a
-            single, smart place that aggregates job portals and gives you
-            career search tools to find roles that fit your skills and
-            ambitions. Explore curated listings and apply faster.
+            Discover your next career opportunity with JobScout — a single,
+            smart place that aggregates job portals and gives you career search
+            tools to find roles that fit your skills and ambitions. Explore
+            curated listings and apply faster.
           </p>
           <div className="hero-ctas">
-            <button 
-              className="cta-btn primary" 
+            <button
+              className="cta-btn primary"
               onClick={handleSearchJobs}
               onMouseEnter={preloadHandlers.searchJobs}
               onFocus={preloadHandlers.searchJobs}
@@ -71,25 +69,24 @@ function Home({ preloadHandlers = {} }) {
         <div className="container">
           <h2>Why Choose JobScout?</h2>
           <p className="section-sub">
-            We make job searching easier by combining the best listings
-            from trusted portals and Google powered search — all in one
-            place.
+            We make job searching easier by combining the best listings from
+            trusted portals and Google powered search — all in one place.
           </p>
           <div className="features">
             <div className="feature">
               <div className="icon">🌐</div>
               <h3>Comprehensive Coverage</h3>
               <p>
-                Find opportunities from top job boards and career sites
-                without hopping between multiple platforms.
+                Find opportunities from top job boards and career sites without
+                hopping between multiple platforms.
               </p>
             </div>
             <div className="feature">
               <div className="icon">🔍</div>
               <h3>Smart Career Search</h3>
               <p>
-                Leverage Google-powered search to quickly discover roles
-                that truly match your skills.
+                Leverage Google-powered search to quickly discover roles that
+                truly match your skills.
               </p>
             </div>
             <div className="feature">
@@ -107,12 +104,12 @@ function Home({ preloadHandlers = {} }) {
         <div className="container">
           <h2>Ready to Find Your Dream Job?</h2>
           <p className="section-sub">
-            Start your job search journey today and discover opportunities
-            that match your skills and aspirations.
+            Start your job search journey today and discover opportunities that
+            match your skills and aspirations.
           </p>
           <div className="hero-ctas">
-            <button 
-              className="cta-btn primary" 
+            <button
+              className="cta-btn primary"
               onClick={handleSearchJobs}
               onMouseEnter={preloadHandlers.searchJobs}
               onFocus={preloadHandlers.searchJobs}
@@ -140,6 +137,9 @@ function Home({ preloadHandlers = {} }) {
           <p className="muted">
             © 2025 JobScout. Connecting talent with opportunity.
           </p>
+          <div className="coffee-support">
+            <BuyMeCoffee imagePath="src/assets/buymeacoffee.jpg" />
+          </div>
         </div>
       </footer>
     </div>
