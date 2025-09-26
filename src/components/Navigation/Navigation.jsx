@@ -124,7 +124,7 @@ const Navigation = ({ preloadHandlers = {} }) => {
         <div className="profile-stats">
           <div className="profile-stat">
             <span className="profile-stat-label">API Usage</span>
-            <span className="profile-stat-value">{user.apiCallCount || 0}/1000</span>
+            <span className="profile-stat-value">{user.apiCallCount || 0}</span>
           </div>
         </div>
         

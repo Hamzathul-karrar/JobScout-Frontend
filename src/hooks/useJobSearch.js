@@ -1,4 +1,4 @@
-// useJobSearch.js - Fixed version
+// useJobSearch.js - Updated with API call count handling
 import { useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,7 +7,7 @@ import { normalizeJobs } from '../utils/jobUtils';
 
 export const useJobSearch = () => {
   const navigate = useNavigate();
-  const { makeAuthenticatedRequest } = useAuth();
+  const { makeAuthenticatedRequest, updateUserApiCallCount } = useAuth();
   const {
     jobTitle,
     location,
@@ -38,8 +38,7 @@ export const useJobSearch = () => {
       const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       const endpoint = `/searchJob?jobTitle=${encodeURIComponent(jobTitle.trim())}&location=${encodeURIComponent(location.trim())}`;
-      
-      
+
       const response = await makeAuthenticatedRequest(endpoint, {
         method: 'GET',
         signal: controller.signal
@@ -63,27 +62,27 @@ export const useJobSearch = () => {
       }
 
       const data = await response.json();
-    
 
-      // Fixed: Handle the response properly - backend returns direct array
+      // Update API call count in localStorage if present in response
+      if (data.apiCallCount !== undefined && data.apiCallCount !== null) {
+        updateUserApiCallCount(data.apiCallCount);
+      }
+
+      // Handle the response properly - backend returns ApiResponse with data field
       let jobsArray = [];
-      
-      if (Array.isArray(data)) {
-        // Backend returns direct array of JobResult objects
+      if (data.data && Array.isArray(data.data)) {
+        // Backend returns ApiResponse with data property containing array of JobResult objects
+        jobsArray = data.data;
+      } else if (Array.isArray(data)) {
+        // Fallback: if direct array
         jobsArray = data;
       } else if (data && data.jobs && Array.isArray(data.jobs)) {
         // Fallback: if wrapped in object with jobs property
         jobsArray = data.jobs;
-      } else if (data && data.data && Array.isArray(data.data)) {
-        // Fallback: if wrapped in object with data property
-        jobsArray = data.data;
       } else {
         console.warn('Unexpected response format:', data);
         jobsArray = [];
       }
-
-      
-
 
       const normalizedTitle = jobTitle.trim();
       const normalizedLocation = location.trim();

@@ -35,7 +35,7 @@ const BuyMeCoffee = ({ imagePath = "/assets/buymeacoffee.jpg" }) => {
         onClick={openModal}
         aria-label="Support with Buy Me a Coffee"
       >
-        <span className="coffee-icon">☕</span>
+        <span className="coffee-icon"></span>
         <span className="coffee-text">Buy me a coffee</span>
       </button>
 

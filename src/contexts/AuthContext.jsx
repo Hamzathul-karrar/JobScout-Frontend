@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
     const refreshData = await refreshResponse.json();
     const updatedUser = { ...u, accessToken: refreshData.accessToken, refreshToken: refreshData.refreshToken };
-
+    
     setUser(updatedUser);
 
     // Batch updates for performance
@@ -79,9 +79,40 @@ export const AuthProvider = ({ children }) => {
     return updatedUser;
   }, [user]);
 
+  // NEW: Function to update API call count in user object and localStorage
+  const updateUserApiCallCount = useCallback((newApiCallCount) => {
+    if (typeof newApiCallCount !== 'number') return;
+
+    setUser(currentUser => {
+      if (!currentUser) return currentUser;
+      
+      const updatedUser = {
+        ...currentUser,
+        apiCallCount: newApiCallCount
+      };
+
+      // Update localStorage user object
+      try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          const updatedStoredUser = {
+            ...parsedUser,
+            apiCallCount: newApiCallCount
+          };
+          localStorage.setItem('user', JSON.stringify(updatedStoredUser));
+        }
+      } catch (error) {
+        console.error('Error updating user apiCallCount in localStorage:', error);
+      }
+
+      return updatedUser;
+    });
+  }, []);
+
   const login = useCallback((userData) => {
     const { accessToken, refreshToken, ...userInfo } = userData;
-
+    
     setUser({
       ...userInfo,
       accessToken,
@@ -214,14 +245,16 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated,
     isLoading,
-    makeAuthenticatedRequest
+    makeAuthenticatedRequest,
+    updateUserApiCallCount
   }), [
     user,
     login,
     logout,
     isAuthenticated,
     isLoading,
-    makeAuthenticatedRequest
+    makeAuthenticatedRequest,
+    updateUserApiCallCount
   ]);
 
   return (
