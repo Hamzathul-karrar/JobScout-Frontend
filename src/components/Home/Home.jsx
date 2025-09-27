@@ -138,7 +138,7 @@ function Home({ preloadHandlers = {} }) {
             © 2025 JobScout. Connecting talent with opportunity.
           </p>
           <div className="coffee-support">
-            <BuyMeCoffee imagePath="src/assets/buymeacoffee.jpg" />
+            <BuyMeCoffee />
           </div>
         </div>
       </footer>

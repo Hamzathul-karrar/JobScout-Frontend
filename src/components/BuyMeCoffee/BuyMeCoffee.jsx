@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './BuyMeCoffee.css';
+import buymeacoffeeImage from '../../assets/buymeacoffee.jpg';
 
-const BuyMeCoffee = ({ imagePath = "src/assets/buymeacoffee.jpg" }) => {
+const BuyMeCoffee = ({ imagePath = buymeacoffeeImage }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
