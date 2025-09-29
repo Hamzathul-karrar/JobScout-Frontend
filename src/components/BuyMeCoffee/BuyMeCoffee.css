@@ -6,9 +6,9 @@
     align-items: center;
     gap: 12px;
     padding: 18px 36px;
-    background: linear-gradient(135deg, #7877c6 0%, #ff6384 100%);
+    background: rgba(255, 255, 255, 0.08);
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 16px;
     font-size: 1rem;
     font-weight: 600;
@@ -19,7 +19,6 @@
     letter-spacing: 1px;
     white-space: nowrap;
     min-height: 56px;
-    box-shadow: 0 12px 40px rgba(120, 119, 198, 0.3);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 background 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -51,13 +50,12 @@
   
   .buy-coffee-btn:hover {
     transform: translate3d(0, -4px, 0);
-    box-shadow: 0 20px 60px rgba(120, 119, 198, 0.4);
-    background: linear-gradient(135deg, #8a89d4 0%, #ff7a9a 100%);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
   }
   
   .buy-coffee-btn:active {
     transform: translate3d(0, -2px, 0);
-    box-shadow: 0 8px 24px rgba(120, 119, 198, 0.35);
   }
   
   .buy-coffee-btn:focus {
@@ -470,7 +468,6 @@
       border-radius: 10px;
       letter-spacing: 0.3px;
       text-transform: none;
-      box-shadow: 0 6px 20px rgba(120, 119, 198, 0.3);
     }
   
     .coffee-icon {

@@ -11,6 +11,7 @@ export const useJobSearch = () => {
   const {
     jobTitle,
     location,
+    experience,
     setIsSearching,
     setError,
     setHasSearched,
@@ -37,7 +38,12 @@ export const useJobSearch = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-      const endpoint = `/searchJob?jobTitle=${encodeURIComponent(jobTitle.trim())}&location=${encodeURIComponent(location.trim())}`;
+      const query = new URLSearchParams({
+        jobTitle: jobTitle.trim(),
+        location: location.trim(),
+        ...(experience ? { experience } : {}),
+      }).toString();
+      const endpoint = `/searchJob?${query}`;
 
       const response = await makeAuthenticatedRequest(endpoint, {
         method: 'GET',
@@ -86,25 +92,33 @@ export const useJobSearch = () => {
 
       const normalizedTitle = jobTitle.trim();
       const normalizedLocation = location.trim();
+      const normalizedExperience = experience || '';
       const sortedJobs = normalizeJobs(jobsArray);
 
       const newGroup = {
         id: Date.now(),
         jobTitle: normalizedTitle,
         location: normalizedLocation,
+        experience: normalizedExperience,
         createdAt: new Date().toISOString(),
         jobs: sortedJobs,
       };
 
+      // Replace any existing history item with the same title+location (ignore experience)
       const updatedGroups = [
         newGroup,
-        ...groups.filter(g =>
-          (g?.jobTitle || '').trim().toLowerCase() !== normalizedTitle.toLowerCase() ||
-          (g?.location || '').trim().toLowerCase() !== normalizedLocation.toLowerCase()
-        ),
+        ...groups.filter(g => {
+          const gTitle = (g?.jobTitle || '').trim().toLowerCase();
+          const gLocation = (g?.location || '').trim().toLowerCase();
+          return !(gTitle === normalizedTitle.toLowerCase() && gLocation === normalizedLocation.toLowerCase());
+        }),
       ];
 
-      const nextPagination = { ...paginationMap, [newGroup.id]: 1 };
+      const remainingGroupIds = updatedGroups.map(g => g.id);
+      const nextPagination = remainingGroupIds.reduce((acc, id) => {
+        acc[id] = paginationMap[id] || (id === newGroup.id ? 1 : 1);
+        return acc;
+      }, {});
 
       // Batch state updates
       setGroups(updatedGroups);
@@ -143,7 +157,7 @@ export const useJobSearch = () => {
     } finally {
       setIsSearching(false);
     }
-  }, [jobTitle, location, groups, makeAuthenticatedRequest, navigate, setIsSearching, setError, setHasSearched, setGroups, paginationMap, setPaginationMap]);
+  }, [jobTitle, location, experience, groups, makeAuthenticatedRequest, navigate, setIsSearching, setError, setHasSearched, setGroups, paginationMap, setPaginationMap]);
 
   return {
     handleSearch,

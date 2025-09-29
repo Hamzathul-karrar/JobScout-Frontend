@@ -13,6 +13,7 @@ export const useSearchJobContext = () => {
 export const SearchJobProvider = ({ children }) => {
   const [jobTitle, setJobTitle] = useState('');
   const [location, setLocation] = useState('');
+  const [experience, setExperience] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [groups, setGroups] = useState([]);
   const [error, setError] = useState('');
@@ -28,6 +29,8 @@ export const SearchJobProvider = ({ children }) => {
     setJobTitle,
     location,
     setLocation,
+    experience,
+    setExperience,
     isSearching,
     setIsSearching,
     groups,
@@ -42,6 +45,7 @@ export const SearchJobProvider = ({ children }) => {
   }), [
     jobTitle,
     location,
+    experience,
     isSearching,
     groups,
     error,

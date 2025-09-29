@@ -1,13 +1,11 @@
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 import Navigation from "../Navigation/Navigation";
 import BuyMeCoffee from '../BuyMeCoffee/BuyMeCoffee';
 import "./Home.css";
 
 function Home({ preloadHandlers = {} }) {
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAuth();
 
   const handleExplorePortals = useCallback(() => {
     navigate("/jobportals");
@@ -17,13 +15,6 @@ function Home({ preloadHandlers = {} }) {
     navigate("/search-jobs");
   }, [navigate]);
 
-  const handleSignUp = useCallback(() => {
-    navigate("/register");
-  }, [navigate]);
-
-  const handleSignIn = useCallback(() => {
-    navigate("/login");
-  }, [navigate]);
 
   return (
     <div>

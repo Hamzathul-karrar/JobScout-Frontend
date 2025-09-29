@@ -9,6 +9,8 @@ const SearchForm = memo(() => {
     setJobTitle, 
     location, 
     setLocation, 
+    experience,
+    setExperience,
     isSearching, 
     hasSearched 
   } = useSearchJobContext();
@@ -27,6 +29,10 @@ const SearchForm = memo(() => {
   const onLocationChange = useCallback((e) => {
     setLocation(e.target.value);
   }, [setLocation]);
+
+  const onExperienceChange = useCallback((e) => {
+    setExperience(e.target.value);
+  }, [setExperience]);
 
   return (
     <div className={`search-form ${hasSearched ? 'search-form-searched' : ''}`}>
@@ -52,6 +58,18 @@ const SearchForm = memo(() => {
             placeholder="e.g., New York, Remote"
             className="search-input"
           />
+        </div>
+        <div className="input-group">
+          <label htmlFor="experience">Experience</label>
+          <select
+            id="experience"
+            value={experience}
+            onChange={onExperienceChange}
+            className="search-input"
+          >
+            <option value="">Any</option>
+            <option value="fresher">Fresher</option>
+          </select>
         </div>
       </div>
       <button 
