@@ -11,12 +11,7 @@ const PaginationControls = memo(({ group, currentPage }) => {
   
   const onChangePage = useCallback((direction) => {
     handleChangePage(group.id, direction);
-    // Persist pagination after state update
-    setTimeout(() => {
-      const pagination = JSON.parse(localStorage.getItem('searchJobPagination') || '{}');
-      persistPagination(pagination);
-    }, 0);
-  }, [handleChangePage, group.id, persistPagination]);
+  }, [handleChangePage, group.id]);
 
   const onFirst = useCallback(() => onChangePage('first'), [onChangePage]);
   const onPrev = useCallback(() => onChangePage('prev'), [onChangePage]);

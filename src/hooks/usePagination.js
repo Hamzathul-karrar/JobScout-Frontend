@@ -1,9 +1,11 @@
 import { useCallback } from 'react';
 import { useSearchJobContext } from '../contexts/SearchJobContext';
+import { useLocalStorage } from './useLocalStorage';
 import { JOBS_PER_PAGE } from '../utils/constants';
 
 export const usePagination = () => {
-  const { groups, paginationMap, setPaginationMap, groupRefs } = useSearchJobContext();
+  const { groups, setPaginationMap, groupRefs } = useSearchJobContext();
+  const { persistPagination } = useLocalStorage();
 
   const scrollGroupIntoView = useCallback((groupId) => {
     try {
@@ -32,7 +34,10 @@ export const usePagination = () => {
       }
 
       const updated = { ...prev, [groupId]: next };
-      // Note: persistPagination will be called from the component
+      // Persist the freshly computed pagination map to avoid stale reads
+      try {
+        persistPagination(updated);
+      } catch {}
       return updated;
     });
 
