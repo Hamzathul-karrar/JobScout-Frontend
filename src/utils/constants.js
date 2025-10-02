@@ -149,6 +149,12 @@ export const JOB_PORTALS = [
       url: "https://www.letsintern.com/",
       isFavorite: false,
     },
+    {
+      id: 26,
+      name: "Y Combinator",
+      url: "https://www.workatastartup.com/companies",
+      isFavorite: false,
+    }
   ];
   
   export const STORAGE_KEYS = {
