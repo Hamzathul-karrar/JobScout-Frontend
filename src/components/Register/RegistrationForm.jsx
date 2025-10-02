@@ -78,7 +78,7 @@ const RegistrationForm = ({
           onBlur={(value) => handleFieldBlur("serpApiKey", value)}
           error={errors.serpApiKey}
           required
-          tooltipText="SerpApi Key should be Valid. Get it from https://serpapi.com/users/sign_up?plan=free"
+          tooltipText="SerpApi Key should be Valid. Get it from serpapi.com or click on the link below."
           className="full-row"
         />
       </div>
