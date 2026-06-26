@@ -1,12 +1,54 @@
-# React + Vite
+# JobScout Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg)](https://jobscout-app.netlify.app/)
+[![Backend Repo](https://img.shields.io/badge/Backend-Repository-blue.svg)](https://github.com/Hamzathul-karrar/JobScout-Backend)
 
-Currently, two official plugins are available:
+JobScout is a React-based frontend application built with Vite that helps users find job opportunities. It provides a platform to search for jobs, explore various job portals, and manage user authentication.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Job Search**: Integrated job search functionality.
+- **Job Portals Directory**: A curated list of various job portals for easy access.
+- **User Authentication**: Secure Login, Registration, and Logout capabilities.
+- **Protected Routes**: Ensuring only authenticated users can access specific features.
+- **Skeleton Loaders**: Enhanced user experience with loading skeletons during data fetching and component lazy loading.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Technologies Used
+
+- **React 19**: Frontend UI library.
+- **Vite**: Next Generation Frontend Tooling for fast builds and HMR.
+- **React Router DOM**: Declarative routing for React applications.
+- **React Hot Toast**: Notifications and toasts.
+- **ESLint**: Linter for code quality.
+
+## Project Structure
+
+- `src/components/`: Contains all the React components (Home, Login, Register, JobPortals, SearchJobGoogle, etc.).
+- `src/contexts/`: React context providers (e.g., `AuthContext` for authentication state).
+- `src/hooks/`: Custom React hooks.
+- `src/Skeletons/`: Skeleton loading components for better UI feedback.
+- `src/utils/`: Utility functions and helpers.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher recommended)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd JobScout-Frontend
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
