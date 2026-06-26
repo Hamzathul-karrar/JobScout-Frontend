@@ -41,7 +41,7 @@ JobScout is a React-based frontend application built with Vite that helps users 
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Hamzathul-karrar/JobScout-Frontend.git
    ```
 2. Navigate to the project directory:
    ```bash
