@@ -1,4 +1,4 @@
-# JobScout Frontend
+# JobScout 
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg)](https://jobscout-app.netlify.app/)
 [![Backend Repo](https://img.shields.io/badge/Backend-Repository-blue.svg)](https://github.com/Hamzathul-karrar/JobScout-Backend)
